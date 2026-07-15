@@ -11,7 +11,8 @@ The **engine** and the **display** are deliberately separate:
 - **Engine (runs on one always-on computer):** A scheduled task in the Claude
   desktop app drives a logged-in Google Chrome to search Cars.com, Craigslist, and
   **Facebook Marketplace** (which only works from a browser where you're signed in).
-  It writes the results to `listings.json` and pushes the commit to this repo.
+  It writes the results to `listings.json`, copies them to a dated snapshot at
+  `history/YYYY-MM-DD.json` (same format), and pushes the commit to this repo.
 - **Display (runs anywhere):** GitHub Pages serves `index.html`, which loads
   `listings.json` and renders the ranked, sortable shortlist. Open the Pages URL
   from your phone, the web, or any computer to see the latest — Facebook included.
@@ -26,7 +27,7 @@ only the *results* live on GitHub.
 denver-car-search/
 ├── index.html          # the tracker page (GitHub Pages serves this)
 ├── listings.json       # current results — overwritten by each scheduled run
-├── history/            # optional: dated JSON snapshots so you can see what changed
+├── history/            # dated JSON snapshots — power the ▼/▲ price-change badges
 │   └── 2026-07-15.json
 └── .github/workflows/
     └── validate.yml    # checks each listings.json push so a bad commit can't break the page
@@ -43,6 +44,10 @@ The daily task only rewrites the JSON, so updates are tiny, clean commits.
 - **✕ hide** on each row to dismiss listings you've ruled out (stored in the
   browser's localStorage, per device); "Show N hidden" brings them back.
 - **NEW badge** when a row's `firstSeen` matches the latest `updated` date.
+- **Price-change badges** — the page loads the most recent snapshot in `history/`
+  from before the current run (looking back up to 14 days) and shows ▼/▲ with the
+  dollar change under any price that moved; hover shows the old price and date.
+  Listings are matched by their `url`. If no snapshot exists yet, nothing is shown.
 - **Stale-data warning** if the JSON is more than 36 hours old, so you know when
   the desktop task has stopped running.
 - **Dark mode** follows the device setting.

@@ -12,7 +12,7 @@
   color-scheme: light dark;
   --bg:#f6f7f9; --card:#fff; --text:#1c2126; --muted:#5b6572; --muted2:#6b7480;
   --border:#e3e7ec; --border2:#dfe4ea; --rowline:#edf0f3; --thbg:#f0f3f6;
-  --accent:#2563eb; --green:#0b6b3a; --footer:#93a0ad;
+  --accent:#2563eb; --green:#0b6b3a; --rise:#b91c1c; --footer:#93a0ad;
   --ev-bg:#e0f2fe; --ev-fg:#075985; --phev-bg:#ede9fe; --phev-fg:#5b21b6; --hyb-bg:#dcfce7; --hyb-fg:#166534;
   --tips-bg:#fffbeb; --tips-border:#fde68a;
   --warn-bg:#fffbeb; --warn-border:#fde68a; --warn-fg:#92400e;
@@ -22,7 +22,7 @@
   :root {
     --bg:#14181d; --card:#1d232b; --text:#e6e9ed; --muted:#9aa5b1; --muted2:#8a95a1;
     --border:#2b333d; --border2:#323b46; --rowline:#28303a; --thbg:#232a33;
-    --accent:#7aa7ff; --green:#4ade80; --footer:#5f6b78;
+    --accent:#7aa7ff; --green:#4ade80; --rise:#f87171; --footer:#5f6b78;
     --ev-bg:#0c4a6e; --ev-fg:#bae6fd; --phev-bg:#4c1d95; --phev-fg:#ddd6fe; --hyb-bg:#14532d; --hyb-fg:#bbf7d0;
     --tips-bg:#26210f; --tips-border:#4d4014;
     --warn-bg:#26210f; --warn-border:#4d4014; --warn-fg:#fcd34d;
@@ -59,6 +59,9 @@ tr:last-child td { border-bottom:none; }
 tr.is-hidden td { opacity:.45; }
 .rank { font-weight:700; color:var(--accent); }
 .price { font-weight:700; white-space:nowrap; }
+.delta { display:block; font-size:10px; font-weight:700; cursor:default; }
+.delta.drop { color:var(--green); }
+.delta.rise { color:var(--rise); }
 .veh-link { color:var(--accent); font-weight:700; text-decoration:none; }
 .veh-link:hover { text-decoration:underline; }
 .tag { display:inline-block; font-size:10px; font-weight:700; padding:2px 6px; border-radius:5px; }
@@ -162,7 +165,7 @@ footer { margin-top:34px; font-size:11px; color:var(--footer); }
     <tbody></tbody>
   </table>
   </div>
-  <div class="legend">Distance = miles from Aurora 80015. Dealer prices are firm-ish; private/FB prices are negotiable (FB "$3,000" is often a placeholder — always message to confirm). <b class="new" style="margin-left:0">NEW</b> = first seen in the latest run. Click a column header to sort; ✕ hides a listing you've ruled out (saved on this device).</div>
+  <div class="legend">Distance = miles from Aurora 80015. Dealer prices are firm-ish; private/FB prices are negotiable (FB "$3,000" is often a placeholder — always message to confirm). <b class="new" style="margin-left:0">NEW</b> = first seen in the latest run. <b>▼/▲</b> under a price = change since the previous snapshot in <code>history/</code> (hover for the old price). Click a column header to sort; ✕ hides a listing you've ruled out (saved on this device).</div>
 
   <h2>💡 Buying tips for this budget</h2>
   <div class="tips"><ul>
@@ -185,6 +188,7 @@ const rowKey = r => r.url || r.veh;
 
 let rows = [];
 let latestRun = null;
+let prevPrices = null; // {date: 'YYYY-MM-DD', prices: {rowKey: price}} from newest history snapshot
 const state = { fuel: 'ALL', q: '', sortKey: null, sortAsc: true, sortNum: false, showHidden: false };
 
 let hidden = new Set();
@@ -192,6 +196,40 @@ try { hidden = new Set(JSON.parse(localStorage.getItem('dcs-hidden') || '[]')); 
 const saveHidden = () => { try { localStorage.setItem('dcs-hidden', JSON.stringify([...hidden])); } catch (e) {} };
 
 const tbody = document.querySelector('#grid tbody');
+
+function deltaHtml(r) {
+  if (!prevPrices) return '';
+  const was = prevPrices.prices[rowKey(r)];
+  if (typeof was !== 'number' || typeof r.price !== 'number' || was === r.price) return '';
+  const d = r.price - was;
+  return `<span class="delta ${d < 0 ? 'drop' : 'rise'}" title="was $${was.toLocaleString()} on ${esc(prevPrices.date)}">${d < 0 ? '▼' : '▲'} $${Math.abs(d).toLocaleString()}</span>`;
+}
+
+// Find the newest dated snapshot in history/ older than the current run,
+// walking back day by day (missing days just 404 and are skipped).
+async function loadPrevPrices() {
+  if (!latestRun) return;
+  const base = new Date(latestRun + 'T12:00:00');
+  if (isNaN(base)) return;
+  for (let i = 1; i <= 14; i++) {
+    const d = new Date(base);
+    d.setDate(base.getDate() - i);
+    const iso = d.toISOString().slice(0, 10);
+    try {
+      const resp = await fetch('history/' + iso + '.json?_=' + Date.now());
+      if (!resp.ok) continue;
+      const j = await resp.json();
+      const prices = {};
+      (j.listings || []).forEach(x => {
+        const k = x.url || x.veh;
+        if (k && typeof x.price === 'number') prices[k] = x.price;
+      });
+      prevPrices = { date: iso, prices };
+      applyView();
+      return;
+    } catch (e) { /* keep walking back */ }
+  }
+}
 
 function rowHtml(r, isHidden) {
   const isNew = latestRun && r.firstSeen === latestRun;
@@ -201,7 +239,7 @@ function rowHtml(r, isHidden) {
     <td class="rank">${esc(r.rank)}</td>
     <td class="c-veh">${veh}${isNew ? '<span class="new">NEW</span>' : ''}</td>
     <td><span class="tag ${tagClass(r.type)}">${esc(r.type)}</span></td>
-    <td class="price">$${Number(r.price).toLocaleString()}</td>
+    <td class="price">$${Number(r.price).toLocaleString()}${deltaHtml(r)}</td>
     <td data-l="miles">${r.miles != null ? Number(r.miles).toLocaleString() : '<span class="badge">ask</span>'}</td>
     <td data-l="mpg/range">${esc(r.mpg)}</td>
     <td data-l="away">${r.dist != null ? esc(r.dist) + ' mi' : ''}</td>
@@ -318,6 +356,7 @@ fetch('listings.json?_=' + Date.now())
       document.getElementById('updated').textContent = '';
     }
     applyView();
+    loadPrevPrices();
   })
   .catch(() => { document.getElementById('err').style.display = 'block'; document.getElementById('updated').textContent = ''; });
 </script>
