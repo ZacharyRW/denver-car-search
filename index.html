@@ -3,43 +3,96 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14181d" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚗</text></svg>">
 <title>Denver Car Search Tracker</title>
 <style>
-:root { color-scheme: light; }
+:root {
+  color-scheme: light dark;
+  --bg:#f6f7f9; --card:#fff; --text:#1c2126; --muted:#5b6572; --muted2:#6b7480;
+  --border:#e3e7ec; --border2:#dfe4ea; --rowline:#edf0f3; --thbg:#f0f3f6;
+  --accent:#2563eb; --green:#0b6b3a; --footer:#93a0ad;
+  --ev-bg:#e0f2fe; --ev-fg:#075985; --phev-bg:#ede9fe; --phev-fg:#5b21b6; --hyb-bg:#dcfce7; --hyb-fg:#166534;
+  --tips-bg:#fffbeb; --tips-border:#fde68a;
+  --warn-bg:#fffbeb; --warn-border:#fde68a; --warn-fg:#92400e;
+  --err-bg:#fef2f2; --err-border:#fecaca; --err-fg:#991b1b;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:#14181d; --card:#1d232b; --text:#e6e9ed; --muted:#9aa5b1; --muted2:#8a95a1;
+    --border:#2b333d; --border2:#323b46; --rowline:#28303a; --thbg:#232a33;
+    --accent:#7aa7ff; --green:#4ade80; --footer:#5f6b78;
+    --ev-bg:#0c4a6e; --ev-fg:#bae6fd; --phev-bg:#4c1d95; --phev-fg:#ddd6fe; --hyb-bg:#14532d; --hyb-fg:#bbf7d0;
+    --tips-bg:#26210f; --tips-border:#4d4014;
+    --warn-bg:#26210f; --warn-border:#4d4014; --warn-fg:#fcd34d;
+    --err-bg:#2b1416; --err-border:#5c2226; --err-fg:#fca5a5;
+  }
+}
 * { box-sizing: border-box; }
-body { margin: 0; background: #f6f7f9; color: #1c2126; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.5; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.5; }
 .wrap { max-width: 1080px; margin: 0 auto; padding: 24px 16px 60px; }
 h1 { font-size: 24px; margin: 0 0 4px; }
-.sub { color: #5b6572; font-size: 13px; margin-bottom: 20px; }
-h2 { font-size: 17px; margin: 30px 0 10px; border-bottom: 2px solid #e3e7ec; padding-bottom: 6px; }
-.crit { background:#fff; border:1px solid #e3e7ec; border-radius:10px; padding:14px 16px; font-size:13px; display:flex; flex-wrap:wrap; gap:8px 20px; }
-.crit b { color:#0b6b3a; }
+.sub { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+h2 { font-size: 17px; margin: 30px 0 10px; border-bottom: 2px solid var(--border); padding-bottom: 6px; }
+.crit { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:14px 16px; font-size:13px; display:flex; flex-wrap:wrap; gap:8px 20px; }
+.crit b { color:var(--green); }
 .searches { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; }
-.searches a { display:block; background:#fff; border:1px solid #dfe4ea; border-radius:9px; padding:11px 13px; text-decoration:none; color:#1c2126; font-size:13px; font-weight:600; transition:.12s; }
-.searches a:hover { border-color:#2563eb; box-shadow:0 2px 8px rgba(37,99,235,.12); }
-.searches a span { display:block; font-weight:400; color:#6b7480; font-size:11px; margin-top:2px; }
+.searches a { display:block; background:var(--card); border:1px solid var(--border2); border-radius:9px; padding:11px 13px; text-decoration:none; color:var(--text); font-size:13px; font-weight:600; transition:.12s; }
+.searches a:hover { border-color:var(--accent); box-shadow:0 2px 8px rgba(37,99,235,.12); }
+.searches a span { display:block; font-weight:400; color:var(--muted2); font-size:11px; margin-top:2px; }
+
+.controls { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0 0 12px; }
+.chip { border:1px solid var(--border2); background:var(--card); color:var(--muted); font:inherit; font-size:12px; font-weight:600; padding:5px 12px; border-radius:999px; cursor:pointer; }
+.chip[aria-pressed="true"] { background:var(--accent); border-color:var(--accent); color:#fff; }
+#q { flex:1 1 140px; min-width:120px; max-width:240px; font:inherit; font-size:13px; padding:6px 10px; border:1px solid var(--border2); border-radius:8px; background:var(--card); color:var(--text); }
+#sortSel { display:none; font:inherit; font-size:13px; padding:6px 8px; border:1px solid var(--border2); border-radius:8px; background:var(--card); color:var(--text); }
+#hiddenToggle { background:none; border:none; font:inherit; font-size:12px; color:var(--accent); cursor:pointer; padding:0; text-decoration:underline; }
+
 .tablewrap { overflow-x:auto; }
-table { width:100%; border-collapse:collapse; background:#fff; border-radius:10px; overflow:hidden; font-size:13px; box-shadow:0 1px 3px rgba(0,0,0,.05); min-width:760px; }
-th, td { text-align:left; padding:9px 11px; border-bottom:1px solid #edf0f3; vertical-align:top; }
-th { background:#f0f3f6; font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:#5b6572; cursor:pointer; user-select:none; white-space:nowrap; }
-th:hover { color:#2563eb; }
+table { width:100%; border-collapse:collapse; background:var(--card); border-radius:10px; overflow:hidden; font-size:13px; box-shadow:0 1px 3px rgba(0,0,0,.05); min-width:760px; }
+th, td { text-align:left; padding:9px 11px; border-bottom:1px solid var(--rowline); vertical-align:top; }
+th { background:var(--thbg); font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); cursor:pointer; user-select:none; white-space:nowrap; }
+th:hover, th:focus-visible { color:var(--accent); outline:none; }
+th .arrow { font-size:9px; }
 tr:last-child td { border-bottom:none; }
-.rank { font-weight:700; color:#2563eb; }
+tr.is-hidden td { opacity:.45; }
+.rank { font-weight:700; color:var(--accent); }
 .price { font-weight:700; white-space:nowrap; }
-.veh-link { color:#2563eb; font-weight:700; text-decoration:none; }
+.veh-link { color:var(--accent); font-weight:700; text-decoration:none; }
 .veh-link:hover { text-decoration:underline; }
 .tag { display:inline-block; font-size:10px; font-weight:700; padding:2px 6px; border-radius:5px; }
-.t-ev { background:#e0f2fe; color:#075985; }
-.t-phev { background:#ede9fe; color:#5b21b6; }
-.t-hyb { background:#dcfce7; color:#166534; }
+.t-ev { background:var(--ev-bg); color:var(--ev-fg); }
+.t-phev { background:var(--phev-bg); color:var(--phev-fg); }
+.t-hyb { background:var(--hyb-bg); color:var(--hyb-fg); }
 .new { display:inline-block; font-size:9px; font-weight:800; background:#dc2626; color:#fff; padding:1px 5px; border-radius:4px; margin-left:6px; vertical-align:middle; }
-.note { font-size:12px; color:#616b76; }
+.note { font-size:12px; color:var(--muted2); }
 .badge { font-size:10px; color:#b45309; font-weight:600; }
-.legend { font-size:12px; color:#6b7480; margin:8px 0 0; }
-footer { margin-top:34px; font-size:11px; color:#93a0ad; }
-.tips { background:#fffbeb; border:1px solid #fde68a; border-radius:10px; padding:12px 16px; font-size:12.5px; }
+.hidebtn { background:none; border:none; color:var(--muted2); cursor:pointer; font-size:12px; padding:0 2px; }
+.hidebtn:hover { color:var(--err-fg); }
+.legend { font-size:12px; color:var(--muted2); margin:8px 0 0; }
+footer { margin-top:34px; font-size:11px; color:var(--footer); }
+.tips { background:var(--tips-bg); border:1px solid var(--tips-border); border-radius:10px; padding:12px 16px; font-size:12.5px; }
 .tips li { margin:4px 0; }
-#err { display:none; background:#fef2f2; border:1px solid #fecaca; color:#991b1b; padding:12px 16px; border-radius:10px; font-size:13px; }
+#err { display:none; background:var(--err-bg); border:1px solid var(--err-border); color:var(--err-fg); padding:12px 16px; border-radius:10px; font-size:13px; }
+#stale { display:none; background:var(--warn-bg); border:1px solid var(--warn-border); color:var(--warn-fg); padding:10px 16px; border-radius:10px; font-size:13px; margin-bottom:14px; }
+.count { font-weight:400; color:var(--muted2); font-size:13px; }
+
+/* phone: table becomes cards */
+@media (max-width:680px) {
+  #sortSel { display:inline-block; }
+  .tablewrap { overflow:visible; }
+  table { min-width:0; background:none; box-shadow:none; }
+  thead { display:none; }
+  tbody tr { display:block; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:10px 12px 8px; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,.05); }
+  tbody td { display:inline-block; border:none; padding:0 10px 4px 0; }
+  td.c-veh { display:block; font-size:14px; padding-right:0; }
+  td.c-why { display:block; padding:4px 0 0; }
+  td[data-l]::before { content:attr(data-l) " "; font-size:10px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted2); }
+  td.c-hide { float:right; padding:0; }
+  tr.is-hidden { opacity:.5; }
+  tr.is-hidden td { opacity:1; }
+}
 </style>
 </head>
 <body>
@@ -48,6 +101,7 @@ footer { margin-top:34px; font-size:11px; color:#93a0ad; }
   <div class="sub">Reliable, safe, efficient family car · under $10,000 · within 100 mi of Aurora 80015 · <span id="updated">loading…</span></div>
 
   <div id="err">Couldn't load <code>listings.json</code>. If you opened this file directly from disk, the browser blocks local fetches — view it through the GitHub Pages URL instead.</div>
+  <div id="stale"></div>
 
   <div class="crit">
     <div><b>Budget</b> ≤ $10k (flexible)</div>
@@ -59,38 +113,56 @@ footer { margin-top:34px; font-size:11px; color:#93a0ad; }
 
   <h2>🔁 Saved searches — click to see fresh live listings</h2>
   <div class="searches">
-    <a href="https://www.cars.com/shopping/results/?zip=80015&maximum_distance=100&list_price_max=10000&stock_type=used&fuel_slugs%5B%5D=hybrid&fuel_slugs%5B%5D=electric&sort=list_price" target="_blank">Cars.com — Hybrid + EV<span>≤$10k · 100 mi · price ↑</span></a>
-    <a href="https://www.cargurus.com/Cars/inventorylisting/viewDetailsFilterViewInventoryListing.action?zip=80015&distance=100&maxPrice=10000&sortType=PRICE&sortDir=ASC" target="_blank">CarGurus — All<span>≤$10k · 100 mi (set fuel = hybrid/EV)</span></a>
-    <a href="https://www.autotrader.com/cars-for-sale/hybrid/aurora-co-80015?maxPrice=10000&searchRadius=100&sortBy=priceASC" target="_blank">Autotrader — Hybrid<span>≤$10k · 100 mi</span></a>
-    <a href="https://denver.craigslist.org/search/cta?max_price=10000&query=hybrid&sort=priceasc" target="_blank">Craigslist — "hybrid"<span>≤$10k · price ↑</span></a>
-    <a href="https://denver.craigslist.org/search/cta?max_price=10000&query=prius&sort=priceasc" target="_blank">Craigslist — "prius"<span>≤$10k · price ↑</span></a>
-    <a href="https://denver.craigslist.org/search/cta?max_price=10000&query=leaf&sort=priceasc" target="_blank">Craigslist — "leaf"<span>≤$10k · price ↑</span></a>
-    <a href="https://www.facebook.com/marketplace/denver/search?minPrice=3000&maxPrice=10000&sortBy=price_ascend&query=hybrid" target="_blank">FB Marketplace — "hybrid"<span>$3k–$10k · 100 mi · price ↑</span></a>
-    <a href="https://www.facebook.com/marketplace/denver/search?minPrice=3000&maxPrice=10000&sortBy=price_ascend&query=prius" target="_blank">FB Marketplace — "prius"<span>$3k–$10k · price ↑</span></a>
-    <a href="https://www.facebook.com/marketplace/denver/search?minPrice=3000&maxPrice=10000&sortBy=price_ascend&query=nissan%20leaf" target="_blank">FB Marketplace — "nissan leaf"<span>$3k–$10k · price ↑</span></a>
+    <a href="https://www.cars.com/shopping/results/?zip=80015&maximum_distance=100&list_price_max=10000&stock_type=used&fuel_slugs%5B%5D=hybrid&fuel_slugs%5B%5D=electric&sort=list_price" target="_blank" rel="noopener">Cars.com — Hybrid + EV<span>≤$10k · 100 mi · price ↑</span></a>
+    <a href="https://www.cargurus.com/Cars/inventorylisting/viewDetailsFilterViewInventoryListing.action?zip=80015&distance=100&maxPrice=10000&sortType=PRICE&sortDir=ASC" target="_blank" rel="noopener">CarGurus — All<span>≤$10k · 100 mi (set fuel = hybrid/EV)</span></a>
+    <a href="https://www.autotrader.com/cars-for-sale/hybrid/aurora-co-80015?maxPrice=10000&searchRadius=100&sortBy=priceASC" target="_blank" rel="noopener">Autotrader — Hybrid<span>≤$10k · 100 mi</span></a>
+    <a href="https://denver.craigslist.org/search/cta?max_price=10000&query=hybrid&sort=priceasc" target="_blank" rel="noopener">Craigslist — "hybrid"<span>≤$10k · price ↑</span></a>
+    <a href="https://denver.craigslist.org/search/cta?max_price=10000&query=prius&sort=priceasc" target="_blank" rel="noopener">Craigslist — "prius"<span>≤$10k · price ↑</span></a>
+    <a href="https://denver.craigslist.org/search/cta?max_price=10000&query=leaf&sort=priceasc" target="_blank" rel="noopener">Craigslist — "leaf"<span>≤$10k · price ↑</span></a>
+    <a href="https://www.facebook.com/marketplace/denver/search?minPrice=3000&maxPrice=10000&sortBy=price_ascend&query=hybrid" target="_blank" rel="noopener">FB Marketplace — "hybrid"<span>$3k–$10k · 100 mi · price ↑</span></a>
+    <a href="https://www.facebook.com/marketplace/denver/search?minPrice=3000&maxPrice=10000&sortBy=price_ascend&query=prius" target="_blank" rel="noopener">FB Marketplace — "prius"<span>$3k–$10k · price ↑</span></a>
+    <a href="https://www.facebook.com/marketplace/denver/search?minPrice=3000&maxPrice=10000&sortBy=price_ascend&query=nissan%20leaf" target="_blank" rel="noopener">FB Marketplace — "nissan leaf"<span>$3k–$10k · price ↑</span></a>
   </div>
 
-  <h2>🏆 Ranked shortlist <span class="note">(click a column header to sort)</span></h2>
+  <h2>🏆 Ranked shortlist <span class="count" id="count"></span></h2>
+
+  <div class="controls">
+    <button class="chip" data-fuel="ALL" aria-pressed="true">All</button>
+    <button class="chip" data-fuel="HYB" aria-pressed="false">Hybrid</button>
+    <button class="chip" data-fuel="PHEV" aria-pressed="false">Plug-in</button>
+    <button class="chip" data-fuel="EV" aria-pressed="false">EV</button>
+    <input id="q" type="search" placeholder="Filter: prius, littleton…" aria-label="Filter listings">
+    <select id="sortSel" aria-label="Sort by">
+      <option value="rank,1">Sort: rank</option>
+      <option value="price,1">Price ↑</option>
+      <option value="price,0">Price ↓</option>
+      <option value="miles,1">Miles ↑</option>
+      <option value="dist,1">Distance ↑</option>
+    </select>
+    <button id="hiddenToggle" hidden></button>
+  </div>
+
   <div class="tablewrap">
   <table id="grid">
     <thead>
       <tr>
-        <th data-k="rank" data-t="n">#</th>
-        <th data-k="veh">Vehicle</th>
-        <th data-k="type">Fuel</th>
-        <th data-k="price" data-t="n">Price</th>
-        <th data-k="miles" data-t="n">Miles</th>
-        <th data-k="mpg">MPG / range</th>
-        <th data-k="dist" data-t="n">Dist</th>
-        <th data-k="loc">Where</th>
-        <th data-k="src">Source</th>
-        <th data-k="why">Why it's here</th>
+        <th scope="col" tabindex="0" data-k="rank" data-t="n">#<span class="arrow"></span></th>
+        <th scope="col" tabindex="0" data-k="veh">Vehicle<span class="arrow"></span></th>
+        <th scope="col" tabindex="0" data-k="type">Fuel<span class="arrow"></span></th>
+        <th scope="col" tabindex="0" data-k="price" data-t="n">Price<span class="arrow"></span></th>
+        <th scope="col" tabindex="0" data-k="miles" data-t="n">Miles<span class="arrow"></span></th>
+        <th scope="col" tabindex="0" data-k="mpg">MPG / range<span class="arrow"></span></th>
+        <th scope="col" tabindex="0" data-k="dist" data-t="n">Dist<span class="arrow"></span></th>
+        <th scope="col" tabindex="0" data-k="loc">Where<span class="arrow"></span></th>
+        <th scope="col" tabindex="0" data-k="src">Source<span class="arrow"></span></th>
+        <th scope="col" tabindex="0" data-k="why">Why it's here<span class="arrow"></span></th>
+        <th scope="col" aria-label="Hide"></th>
       </tr>
     </thead>
     <tbody></tbody>
   </table>
   </div>
-  <div class="legend">Distance = miles from Aurora 80015. Dealer prices are firm-ish; private/FB prices are negotiable (FB "$3,000" is often a placeholder — always message to confirm). <b class="new" style="margin-left:0">NEW</b> = first seen in the latest run.</div>
+  <div class="legend">Distance = miles from Aurora 80015. Dealer prices are firm-ish; private/FB prices are negotiable (FB "$3,000" is often a placeholder — always message to confirm). <b class="new" style="margin-left:0">NEW</b> = first seen in the latest run. Click a column header to sort; ✕ hides a listing you've ruled out (saved on this device).</div>
 
   <h2>💡 Buying tips for this budget</h2>
   <div class="tips"><ul>
@@ -102,59 +174,152 @@ footer { margin-top:34px; font-size:11px; color:#93a0ad; }
     <li><b>Run a VIN title/history check</b> and avoid salvage/rebuilt titles.</li>
   </ul></div>
 
-  <footer>Data in <code>data/listings.json</code> is refreshed by a scheduled task running in the Claude desktop app (which drives a logged-in Chrome, including Facebook Marketplace) and pushed here. Open this page from any device to see the latest.</footer>
+  <footer>Data in <code>listings.json</code> is refreshed by a scheduled task running in the Claude desktop app (which drives a logged-in Chrome, including Facebook Marketplace) and pushed here. Open this page from any device to see the latest.</footer>
 </div>
 
 <script>
-const tagClass = t => t==="EV"?"t-ev":t==="PHEV"?"t-phev":"t-hyb";
+const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const safeUrl = u => (typeof u === 'string' && /^https?:\/\//i.test(u)) ? u : null;
+const tagClass = t => t === 'EV' ? 't-ev' : t === 'PHEV' ? 't-phev' : 't-hyb';
+const rowKey = r => r.url || r.veh;
+
 let rows = [];
 let latestRun = null;
+const state = { fuel: 'ALL', q: '', sortKey: null, sortAsc: true, sortNum: false, showHidden: false };
+
+let hidden = new Set();
+try { hidden = new Set(JSON.parse(localStorage.getItem('dcs-hidden') || '[]')); } catch (e) {}
+const saveHidden = () => { try { localStorage.setItem('dcs-hidden', JSON.stringify([...hidden])); } catch (e) {} };
+
 const tbody = document.querySelector('#grid tbody');
 
-function render(data){
-  tbody.innerHTML = data.map(r=>{
-    const isNew = latestRun && r.firstSeen === latestRun;
-    const veh = r.url ? `<a class="veh-link" href="${r.url}" target="_blank">${r.veh} ↗</a>` : `<b>${r.veh}</b>`;
-    return `<tr>
-      <td class="rank">${r.rank ?? ''}</td>
-      <td>${veh}${isNew?'<span class="new">NEW</span>':''}</td>
-      <td><span class="tag ${tagClass(r.type)}">${r.type}</span></td>
-      <td class="price">$${Number(r.price).toLocaleString()}</td>
-      <td>${r.miles!=null?Number(r.miles).toLocaleString():'<span class="badge">ask</span>'}</td>
-      <td>${r.mpg||''}</td>
-      <td>${r.dist!=null?r.dist+' mi':''}</td>
-      <td>${r.loc||''}</td>
-      <td>${r.src||''}</td>
-      <td class="note">${r.why||''}</td>
-    </tr>`;
-  }).join('');
+function rowHtml(r, isHidden) {
+  const isNew = latestRun && r.firstSeen === latestRun;
+  const url = safeUrl(r.url);
+  const veh = url ? `<a class="veh-link" href="${esc(url)}" target="_blank" rel="noopener">${esc(r.veh)} ↗</a>` : `<b>${esc(r.veh)}</b>`;
+  return `<tr class="${isHidden ? 'is-hidden' : ''}" data-key="${esc(rowKey(r))}">
+    <td class="rank">${esc(r.rank)}</td>
+    <td class="c-veh">${veh}${isNew ? '<span class="new">NEW</span>' : ''}</td>
+    <td><span class="tag ${tagClass(r.type)}">${esc(r.type)}</span></td>
+    <td class="price">$${Number(r.price).toLocaleString()}</td>
+    <td data-l="miles">${r.miles != null ? Number(r.miles).toLocaleString() : '<span class="badge">ask</span>'}</td>
+    <td data-l="mpg/range">${esc(r.mpg)}</td>
+    <td data-l="away">${r.dist != null ? esc(r.dist) + ' mi' : ''}</td>
+    <td data-l="in">${esc(r.loc)}</td>
+    <td data-l="via">${esc(r.src)}</td>
+    <td class="note c-why">${esc(r.why)}</td>
+    <td class="c-hide"><button class="hidebtn" title="${isHidden ? 'Unhide this listing' : 'Hide this listing'}" aria-label="${isHidden ? 'Unhide' : 'Hide'} ${esc(r.veh)}">${isHidden ? '↩' : '✕'}</button></td>
+  </tr>`;
 }
 
-let asc = {};
-document.querySelectorAll('#grid th').forEach(th=>{
-  th.addEventListener('click',()=>{
-    const k = th.dataset.k, num = th.dataset.t==='n';
-    asc[k] = !asc[k];
-    const s = [...rows].sort((a,b)=>{
-      let x=a[k], y=b[k];
-      if(x==null) return 1; if(y==null) return -1;
-      if(num) return asc[k]?x-y:y-x;
-      return asc[k]?String(x).localeCompare(y):String(y).localeCompare(x);
+function applyView() {
+  let list = rows;
+  if (state.fuel !== 'ALL') list = list.filter(r => r.type === state.fuel);
+  if (state.q) {
+    const q = state.q.toLowerCase();
+    list = list.filter(r => [r.veh, r.loc, r.src, r.why, r.mpg].join(' ').toLowerCase().includes(q));
+  }
+  const hiddenCount = list.filter(r => hidden.has(rowKey(r))).length;
+  if (!state.showHidden) list = list.filter(r => !hidden.has(rowKey(r)));
+
+  if (state.sortKey) {
+    const { sortKey: k, sortAsc: a, sortNum: n } = state;
+    list = [...list].sort((x, y) => {
+      let u = x[k], v = y[k];
+      if (u == null) return 1;
+      if (v == null) return -1;
+      if (n) return a ? u - v : v - u;
+      return a ? String(u).localeCompare(String(v)) : String(v).localeCompare(String(u));
     });
-    render(s);
+  }
+
+  tbody.innerHTML = list.length
+    ? list.map(r => rowHtml(r, hidden.has(rowKey(r)))).join('')
+    : '<tr><td colspan="11" class="note" style="padding:16px">No listings match — clear the filters above.</td></tr>';
+
+  document.getElementById('count').textContent = rows.length ? `(${list.length} of ${rows.length})` : '';
+
+  const t = document.getElementById('hiddenToggle');
+  if (hiddenCount) {
+    t.hidden = false;
+    t.textContent = state.showHidden ? 'Hide the hidden listings' : `Show ${hiddenCount} hidden`;
+  } else {
+    t.hidden = true;
+    state.showHidden = false;
+  }
+
+  document.querySelectorAll('#grid th[data-k]').forEach(th => {
+    const active = th.dataset.k === state.sortKey;
+    th.setAttribute('aria-sort', active ? (state.sortAsc ? 'ascending' : 'descending') : 'none');
+    th.querySelector('.arrow').textContent = active ? (state.sortAsc ? ' ▲' : ' ▼') : '';
   });
+}
+
+function setSort(k, num, asc) {
+  state.sortAsc = asc != null ? asc : (state.sortKey === k ? !state.sortAsc : true);
+  state.sortKey = k;
+  state.sortNum = num;
+  applyView();
+}
+
+document.querySelectorAll('#grid th[data-k]').forEach(th => {
+  const go = () => setSort(th.dataset.k, th.dataset.t === 'n');
+  th.addEventListener('click', go);
+  th.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
 });
 
+document.getElementById('sortSel').addEventListener('change', e => {
+  const [k, asc] = e.target.value.split(',');
+  setSort(k, k !== 'veh', asc === '1');
+});
+
+document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+  state.fuel = c.dataset.fuel;
+  document.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', String(x === c)));
+  applyView();
+}));
+
+document.getElementById('q').addEventListener('input', e => { state.q = e.target.value.trim(); applyView(); });
+
+document.getElementById('hiddenToggle').addEventListener('click', () => { state.showHidden = !state.showHidden; applyView(); });
+
+tbody.addEventListener('click', e => {
+  const btn = e.target.closest('.hidebtn');
+  if (!btn) return;
+  const key = btn.closest('tr').dataset.key;
+  hidden.has(key) ? hidden.delete(key) : hidden.add(key);
+  saveHidden();
+  applyView();
+});
+
+function relTime(dt) {
+  const mins = Math.round((Date.now() - dt.getTime()) / 60000);
+  if (mins < 60) return mins + ' min ago';
+  const hrs = Math.round(mins / 60);
+  if (hrs < 48) return hrs + ' hr ago';
+  return Math.round(hrs / 24) + ' days ago';
+}
+
 fetch('listings.json?_=' + Date.now())
-  .then(r=>{ if(!r.ok) throw new Error('http '+r.status); return r.json(); })
-  .then(d=>{
+  .then(r => { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+  .then(d => {
     rows = d.listings || [];
-    latestRun = d.updated ? d.updated.slice(0,10) : null;
+    latestRun = d.updated ? d.updated.slice(0, 10) : null;
     const dt = d.updated ? new Date(d.updated) : null;
-    document.getElementById('updated').innerHTML = dt ? ('last updated <b>'+dt.toLocaleString()+'</b>') : '';
-    render(rows);
+    if (dt && !isNaN(dt)) {
+      document.getElementById('updated').innerHTML = 'last updated <b>' + esc(dt.toLocaleString()) + '</b> (' + relTime(dt) + ')';
+      const hrsOld = (Date.now() - dt.getTime()) / 3600000;
+      if (hrsOld > 36) {
+        const stale = document.getElementById('stale');
+        stale.textContent = '⚠️ This data is ' + relTime(dt).replace(' ago', '') + ' old — the scheduled desktop task may not have run. Listings below may already be sold.';
+        stale.style.display = 'block';
+      }
+    } else {
+      document.getElementById('updated').textContent = '';
+    }
+    applyView();
   })
-  .catch(()=>{ document.getElementById('err').style.display='block'; document.getElementById('updated').textContent=''; });
+  .catch(() => { document.getElementById('err').style.display = 'block'; document.getElementById('updated').textContent = ''; });
 </script>
 </body>
 </html>

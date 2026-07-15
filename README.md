@@ -11,9 +11,9 @@ The **engine** and the **display** are deliberately separate:
 - **Engine (runs on one always-on computer):** A scheduled task in the Claude
   desktop app drives a logged-in Google Chrome to search Cars.com, Craigslist, and
   **Facebook Marketplace** (which only works from a browser where you're signed in).
-  It writes the results to `data/listings.json` and pushes the commit to this repo.
+  It writes the results to `listings.json` and pushes the commit to this repo.
 - **Display (runs anywhere):** GitHub Pages serves `index.html`, which loads
-  `data/listings.json` and renders the ranked, sortable shortlist. Open the Pages URL
+  `listings.json` and renders the ranked, sortable shortlist. Open the Pages URL
   from your phone, the web, or any computer to see the latest — Facebook included.
 
 Facebook Marketplace **cannot** be scraped from GitHub Actions (login required,
@@ -25,15 +25,29 @@ only the *results* live on GitHub.
 ```
 denver-car-search/
 ├── index.html          # the tracker page (GitHub Pages serves this)
-├── data/
-│   └── listings.json   # current results — overwritten by each scheduled run
+├── listings.json       # current results — overwritten by each scheduled run
 ├── history/            # optional: dated JSON snapshots so you can see what changed
 │   └── 2026-07-15.json
-└── README.md
+└── .github/workflows/
+    └── validate.yml    # checks each listings.json push so a bad commit can't break the page
 ```
 
-`index.html` is static and never needs editing — it just reads `data/listings.json`.
+`index.html` is static and never needs editing — it just reads `listings.json`.
 The daily task only rewrites the JSON, so updates are tiny, clean commits.
+
+## Page features
+
+- **Sortable columns** (click a header, or use the sort dropdown on a phone) and
+  **fuel-type / text filters** to narrow the shortlist.
+- **Card layout on phones** — no sideways scrolling.
+- **✕ hide** on each row to dismiss listings you've ruled out (stored in the
+  browser's localStorage, per device); "Show N hidden" brings them back.
+- **NEW badge** when a row's `firstSeen` matches the latest `updated` date.
+- **Stale-data warning** if the JSON is more than 36 hours old, so you know when
+  the desktop task has stopped running.
+- **Dark mode** follows the device setting.
+- All listing text is HTML-escaped and only `http(s)` listing URLs are rendered,
+  so a scraped title can't inject markup into the page.
 
 ## One-time setup
 
@@ -52,7 +66,7 @@ The daily task only rewrites the JSON, so updates are tiny, clean commits.
    > Handle any GitHub token yourself — don't paste it into chat. Store it via
    > `git` credentials or the GitHub CLI (`gh auth login`) on the machine.
 
-## Data format (`data/listings.json`)
+## Data format (`listings.json`)
 
 ```json
 {
