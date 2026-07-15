@@ -1,0 +1,22 @@
+{
+  "updated": "2026-07-15T08:00:00-06:00",
+  "criteria": {
+    "budget_max": 10000,
+    "zip": "80015",
+    "radius_miles": 100,
+    "types": ["hybrid", "electric", "efficient gas"],
+    "priorities": ["reliability", "child safety", "good MPG"]
+  },
+  "listings": [
+    {"rank":1, "veh":"2010 Toyota Prius", "type":"HYB", "price":7100, "miles":170899, "mpg":"48 mpg", "dist":12, "loc":"Littleton", "src":"Cars.com", "url":"https://www.cars.com/vehicledetail/8fd0ba8a-ba2d-4fbc-b980-f6e266c6be25/", "why":"Bulletproof reliability, cheap, roomy hatch. Listed 'Great Deal / High Demand'.", "firstSeen":"2026-07-15"},
+    {"rank":2, "veh":"2011 Chevrolet Volt", "type":"PHEV", "price":6495, "miles":112256, "mpg":"~35 mi EV + gas", "dist":41, "loc":"Longmont", "src":"Cars.com", "url":"https://www.cars.com/vehicledetail/2781f15e-c0a9-45dd-9698-0a1c8586e5e5/", "why":"Plug-in: electric commute on your home outlet, gas backup = zero range anxiety.", "firstSeen":"2026-07-15"},
+    {"rank":3, "veh":"2011 Ford Fusion Hybrid", "type":"HYB", "price":7490, "miles":101337, "mpg":"39 mpg", "dist":18, "loc":"Lakewood", "src":"Cars.com", "url":"https://www.cars.com/vehicledetail/6a804dbe-1b38-4109-9997-1279cc0a81e6/", "why":"Roomy, safe midsize sedan, lowest miles here. Listed 'Great Deal'.", "firstSeen":"2026-07-15"},
+    {"rank":4, "veh":"2012 Toyota Camry Hybrid XLE", "type":"HYB", "price":6798, "miles":195656, "mpg":"40 mpg", "dist":12, "loc":"Denver", "src":"Cars.com", "url":"https://www.cars.com/vehicledetail/2da90eed-6846-4818-ad93-09549aac04d1/", "why":"Bigger/safer sedan, very reliable (goes 250k+). Higher miles but 'Good Deal'.", "firstSeen":"2026-07-15"},
+    {"rank":5, "veh":"2017 Nissan Leaf S", "type":"EV", "price":6498, "miles":99773, "mpg":"~80 mi range", "dist":71, "loc":"Fort Collins", "src":"Cars.com", "url":"https://www.cars.com/vehicledetail/14d3a1f7-89cd-4a6e-acf9-65cda9d74cd6/", "why":"Cheapest newer EV; 'Range Score: Good.' Covers your commute on Level 1 charging.", "firstSeen":"2026-07-15"},
+    {"rank":6, "veh":"2007 Ford Escape Hybrid", "type":"HYB", "price":2967, "miles":143832, "mpg":"30 mpg", "dist":54, "loc":"Greeley", "src":"Cars.com", "url":"https://www.cars.com/vehicledetail/95dd292a-a1a8-4413-a784-692d8117d6e6/", "why":"Cheapest legit hybrid. Reliable (ex-taxi platform), SUV space for kid gear.", "firstSeen":"2026-07-15"},
+    {"rank":7, "veh":"2013 Nissan Leaf SL", "type":"EV", "price":6000, "miles":68382, "mpg":"9/12 battery bars", "dist":28, "loc":"Brighton", "src":"Craigslist", "url":"https://www.craigslist.org/view/d/brighton-2013-nissan-leaf-sl-12-battery/aUNn2geybmHZe3VLk7LzFj", "why":"Low miles, healthy-ish battery for the year. Best for short daily commute only.", "firstSeen":"2026-07-15"},
+    {"rank":8, "veh":"2014 Toyota Prius Two", "type":"HYB", "price":7900, "miles":145000, "mpg":"50 mpg", "dist":12, "loc":"N Denver", "src":"Craigslist", "url":"https://www.craigslist.org/view/d/denver-2014-toyota-prius-two-red145k/dY8c5qPptnCXtjX9LZks7B", "why":"Newer-gen Prius, recent inspection noted. Top MPG of the group.", "firstSeen":"2026-07-15"},
+    {"rank":9, "veh":"2018 Nissan Leaf SL", "type":"EV", "price":7293, "miles":124667, "mpg":"~110 mi range", "dist":55, "loc":"Colorado Springs", "src":"Cars.com", "url":"https://www.cars.com/vehicledetail/1386db31-302a-41f6-8258-93e8c980b184/", "why":"40 kWh battery = much better real-world range, best EV for winter.", "firstSeen":"2026-07-15"},
+    {"rank":10, "veh":"2015 Hyundai Sonata Hybrid SE", "type":"HYB", "price":3000, "miles":null, "mpg":"39 mpg", "dist":8, "loc":"Aurora", "src":"FB Mktpl", "url":"https://www.facebook.com/marketplace/denver/search?minPrice=3000&maxPrice=10000&sortBy=price_ascend&query=sonata%20hybrid", "why":"Very close, low price — but FB price likely a placeholder. Message to confirm.", "firstSeen":"2026-07-15"}
+  ]
+}

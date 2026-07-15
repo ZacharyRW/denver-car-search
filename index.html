@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Denver Car Search Tracker</title>
+<style>
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #f6f7f9; color: #1c2126; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.5; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 24px 16px 60px; }
+h1 { font-size: 24px; margin: 0 0 4px; }
+.sub { color: #5b6572; font-size: 13px; margin-bottom: 20px; }
+h2 { font-size: 17px; margin: 30px 0 10px; border-bottom: 2px solid #e3e7ec; padding-bottom: 6px; }
+.crit { background:#fff; border:1px solid #e3e7ec; border-radius:10px; padding:14px 16px; font-size:13px; display:flex; flex-wrap:wrap; gap:8px 20px; }
+.crit b { color:#0b6b3a; }
+.searches { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; }
+.searches a { display:block; background:#fff; border:1px solid #dfe4ea; border-radius:9px; padding:11px 13px; text-decoration:none; color:#1c2126; font-size:13px; font-weight:600; transition:.12s; }
+.searches a:hover { border-color:#2563eb; box-shadow:0 2px 8px rgba(37,99,235,.12); }
+.searches a span { display:block; font-weight:400; color:#6b7480; font-size:11px; margin-top:2px; }
+.tablewrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; background:#fff; border-radius:10px; overflow:hidden; font-size:13px; box-shadow:0 1px 3px rgba(0,0,0,.05); min-width:760px; }
+th, td { text-align:left; padding:9px 11px; border-bottom:1px solid #edf0f3; vertical-align:top; }
+th { background:#f0f3f6; font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:#5b6572; cursor:pointer; user-select:none; white-space:nowrap; }
+th:hover { color:#2563eb; }
+tr:last-child td { border-bottom:none; }
+.rank { font-weight:700; color:#2563eb; }
+.price { font-weight:700; white-space:nowrap; }
+.veh-link { color:#2563eb; font-weight:700; text-decoration:none; }
+.veh-link:hover { text-decoration:underline; }
+.tag { display:inline-block; font-size:10px; font-weight:700; padding:2px 6px; border-radius:5px; }
+.t-ev { background:#e0f2fe; color:#075985; }
+.t-phev { background:#ede9fe; color:#5b21b6; }
+.t-hyb { background:#dcfce7; color:#166534; }
+.new { display:inline-block; font-size:9px; font-weight:800; background:#dc2626; color:#fff; padding:1px 5px; border-radius:4px; margin-left:6px; vertical-align:middle; }
+.note { font-size:12px; color:#616b76; }
+.badge { font-size:10px; color:#b45309; font-weight:600; }
+.legend { font-size:12px; color:#6b7480; margin:8px 0 0; }
+footer { margin-top:34px; font-size:11px; color:#93a0ad; }
+.tips { background:#fffbeb; border:1px solid #fde68a; border-radius:10px; padding:12px 16px; font-size:12.5px; }
+.tips li { margin:4px 0; }
+#err { display:none; background:#fef2f2; border:1px solid #fecaca; color:#991b1b; padding:12px 16px; border-radius:10px; font-size:13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🚗 Denver Car Search Tracker</h1>
+  <div class="sub">Reliable, safe, efficient family car · under $10,000 · within 100 mi of Aurora 80015 · <span id="updated">loading…</span></div>
+
+  <div id="err">Couldn't load <code>listings.json</code>. If you opened this file directly from disk, the browser blocks local fetches — view it through the GitHub Pages URL instead.</div>
+
+  <div class="crit">
+    <div><b>Budget</b> ≤ $10k (flexible)</div>
+    <div><b>Type</b> Hybrid / EV / efficient gas</div>
+    <div><b>Must have</b> Reliability · child safety · good MPG</div>
+    <div><b>Home charging</b> Level 1 (regular outlet)</div>
+    <div><b>Use</b> Aurora → Lone Tree commute + daycare</div>
+  </div>
+
+  <h2>🔁 Saved searches — click to see fresh live listings</h2>
+  <div class="searches">
+    <a href="https://www.cars.com/shopping/results/?zip=80015&maximum_distance=100&list_price_max=10000&stock_type=used&fuel_slugs%5B%5D=hybrid&fuel_slugs%5B%5D=electric&sort=list_price" target="_blank">Cars.com — Hybrid + EV<span>≤$10k · 100 mi · price ↑</span></a>
+    <a href="https://www.cargurus.com/Cars/inventorylisting/viewDetailsFilterViewInventoryListing.action?zip=80015&distance=100&maxPrice=10000&sortType=PRICE&sortDir=ASC" target="_blank">CarGurus — All<span>≤$10k · 100 mi (set fuel = hybrid/EV)</span></a>
+    <a href="https://www.autotrader.com/cars-for-sale/hybrid/aurora-co-80015?maxPrice=10000&searchRadius=100&sortBy=priceASC" target="_blank">Autotrader — Hybrid<span>≤$10k · 100 mi</span></a>
+    <a href="https://denver.craigslist.org/search/cta?max_price=10000&query=hybrid&sort=priceasc" target="_blank">Craigslist — "hybrid"<span>≤$10k · price ↑</span></a>
+    <a href="https://denver.craigslist.org/search/cta?max_price=10000&query=prius&sort=priceasc" target="_blank">Craigslist — "prius"<span>≤$10k · price ↑</span></a>
+    <a href="https://denver.craigslist.org/search/cta?max_price=10000&query=leaf&sort=priceasc" target="_blank">Craigslist — "leaf"<span>≤$10k · price ↑</span></a>
+    <a href="https://www.facebook.com/marketplace/denver/search?minPrice=3000&maxPrice=10000&sortBy=price_ascend&query=hybrid" target="_blank">FB Marketplace — "hybrid"<span>$3k–$10k · 100 mi · price ↑</span></a>
+    <a href="https://www.facebook.com/marketplace/denver/search?minPrice=3000&maxPrice=10000&sortBy=price_ascend&query=prius" target="_blank">FB Marketplace — "prius"<span>$3k–$10k · price ↑</span></a>
+    <a href="https://www.facebook.com/marketplace/denver/search?minPrice=3000&maxPrice=10000&sortBy=price_ascend&query=nissan%20leaf" target="_blank">FB Marketplace — "nissan leaf"<span>$3k–$10k · price ↑</span></a>
+  </div>
+
+  <h2>🏆 Ranked shortlist <span class="note">(click a column header to sort)</span></h2>
+  <div class="tablewrap">
+  <table id="grid">
+    <thead>
+      <tr>
+        <th data-k="rank" data-t="n">#</th>
+        <th data-k="veh">Vehicle</th>
+        <th data-k="type">Fuel</th>
+        <th data-k="price" data-t="n">Price</th>
+        <th data-k="miles" data-t="n">Miles</th>
+        <th data-k="mpg">MPG / range</th>
+        <th data-k="dist" data-t="n">Dist</th>
+        <th data-k="loc">Where</th>
+        <th data-k="src">Source</th>
+        <th data-k="why">Why it's here</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  </div>
+  <div class="legend">Distance = miles from Aurora 80015. Dealer prices are firm-ish; private/FB prices are negotiable (FB "$3,000" is often a placeholder — always message to confirm). <b class="new" style="margin-left:0">NEW</b> = first seen in the latest run.</div>
+
+  <h2>💡 Buying tips for this budget</h2>
+  <div class="tips"><ul>
+    <li><b>Get a pre-purchase inspection</b> (~$100–150 at any indie shop) before buying anything at this age/mileage.</li>
+    <li><b>Hybrids:</b> ask about traction-battery health and warning lights. Toyota hybrid batteries commonly last 200k+; Honda Civic Hybrid (IMA) batteries are the weak point.</li>
+    <li><b>Used EVs (Leaf):</b> check battery "bars." A 2011–2013 Leaf may show only ~40–70 mi real range, and Colorado winters cut EV range ~30%. 2017+ Leaf is safer for year-round.</li>
+    <li><b>Chevy Volt (plug-in):</b> ~35–53 mi electric covers most daily driving on your home outlet, then gas with no range anxiety.</li>
+    <li><b>Child safety:</b> confirm working LATCH anchors; check the model's IIHS rating.</li>
+    <li><b>Run a VIN title/history check</b> and avoid salvage/rebuilt titles.</li>
+  </ul></div>
+
+  <footer>Data in <code>data/listings.json</code> is refreshed by a scheduled task running in the Claude desktop app (which drives a logged-in Chrome, including Facebook Marketplace) and pushed here. Open this page from any device to see the latest.</footer>
+</div>
+
+<script>
+const tagClass = t => t==="EV"?"t-ev":t==="PHEV"?"t-phev":"t-hyb";
+let rows = [];
+let latestRun = null;
+const tbody = document.querySelector('#grid tbody');
+
+function render(data){
+  tbody.innerHTML = data.map(r=>{
+    const isNew = latestRun && r.firstSeen === latestRun;
+    const veh = r.url ? `<a class="veh-link" href="${r.url}" target="_blank">${r.veh} ↗</a>` : `<b>${r.veh}</b>`;
+    return `<tr>
+      <td class="rank">${r.rank ?? ''}</td>
+      <td>${veh}${isNew?'<span class="new">NEW</span>':''}</td>
+      <td><span class="tag ${tagClass(r.type)}">${r.type}</span></td>
+      <td class="price">$${Number(r.price).toLocaleString()}</td>
+      <td>${r.miles!=null?Number(r.miles).toLocaleString():'<span class="badge">ask</span>'}</td>
+      <td>${r.mpg||''}</td>
+      <td>${r.dist!=null?r.dist+' mi':''}</td>
+      <td>${r.loc||''}</td>
+      <td>${r.src||''}</td>
+      <td class="note">${r.why||''}</td>
+    </tr>`;
+  }).join('');
+}
+
+let asc = {};
+document.querySelectorAll('#grid th').forEach(th=>{
+  th.addEventListener('click',()=>{
+    const k = th.dataset.k, num = th.dataset.t==='n';
+    asc[k] = !asc[k];
+    const s = [...rows].sort((a,b)=>{
+      let x=a[k], y=b[k];
+      if(x==null) return 1; if(y==null) return -1;
+      if(num) return asc[k]?x-y:y-x;
+      return asc[k]?String(x).localeCompare(y):String(y).localeCompare(x);
+    });
+    render(s);
+  });
+});
+
+fetch('listings.json?_=' + Date.now())
+  .then(r=>{ if(!r.ok) throw new Error('http '+r.status); return r.json(); })
+  .then(d=>{
+    rows = d.listings || [];
+    latestRun = d.updated ? d.updated.slice(0,10) : null;
+    const dt = d.updated ? new Date(d.updated) : null;
+    document.getElementById('updated').innerHTML = dt ? ('last updated <b>'+dt.toLocaleString()+'</b>') : '';
+    render(rows);
+  })
+  .catch(()=>{ document.getElementById('err').style.display='block'; document.getElementById('updated').textContent=''; });
+</script>
+</body>
+</html>
