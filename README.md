@@ -44,10 +44,24 @@ The daily task only rewrites the JSON, so updates are tiny, clean commits.
 - **✕ hide** on each row to dismiss listings you've ruled out (stored in the
   browser's localStorage, per device); "Show N hidden" brings them back.
 - **NEW badge** when a row's `firstSeen` matches the latest `updated` date.
-- **Price-change badges** — the page loads the most recent snapshot in `history/`
-  from before the current run (looking back up to 14 days) and shows ▼/▲ with the
-  dollar change under any price that moved; hover shows the old price and date.
-  Listings are matched by their `url`. If no snapshot exists yet, nothing is shown.
+- **Price-change badges** — the page loads the dated snapshots in `history/` from
+  the 14 days before the current run and shows ▼/▲ with the dollar change under any
+  price that moved vs the newest one; hover shows the old price and date. Listings
+  are matched by their `url`. If no snapshot exists yet, nothing is shown.
+- **Price sparklines** — once several days of snapshots exist, a mini price
+  trendline appears under prices that have moved (hover for the day-by-day values).
+- **GONE rows** — listings that were in the newest snapshot but have left the
+  current feed show greyed-out at the bottom with a GONE tag (likely sold or
+  delisted), until the next run's snapshot no longer contains them.
+- **"Listed" column** — days since the tracker first saw the listing (from
+  `firstSeen`), sortable; a long-sitting car is negotiating leverage. This only
+  works if the engine carries `firstSeen` forward from the previous data instead
+  of re-stamping it each run.
+- **Stars and notes** — ☆ pins serious candidates to the top of every sort, and
+  📝 attaches a free-text note to a row. Both live in the browser's localStorage,
+  so — like hides — they are per device and don't sync between phone and laptop.
+- **Safety quick-links** — each row links to the NHTSA page for that year/make/model
+  (recalls, complaints, investigations) and a search for its IIHS rating.
 - **Stale-data warning** if the JSON is more than 36 hours old, so you know when
   the desktop task has stopped running.
 - **Dark mode** follows the device setting.

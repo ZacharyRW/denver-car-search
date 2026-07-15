@@ -12,7 +12,7 @@
   color-scheme: light dark;
   --bg:#f6f7f9; --card:#fff; --text:#1c2126; --muted:#5b6572; --muted2:#6b7480;
   --border:#e3e7ec; --border2:#dfe4ea; --rowline:#edf0f3; --thbg:#f0f3f6;
-  --accent:#2563eb; --green:#0b6b3a; --rise:#b91c1c; --footer:#93a0ad;
+  --accent:#2563eb; --green:#0b6b3a; --rise:#b91c1c; --footer:#93a0ad; --star-bg:#fefce8;
   --ev-bg:#e0f2fe; --ev-fg:#075985; --phev-bg:#ede9fe; --phev-fg:#5b21b6; --hyb-bg:#dcfce7; --hyb-fg:#166534;
   --tips-bg:#fffbeb; --tips-border:#fde68a;
   --warn-bg:#fffbeb; --warn-border:#fde68a; --warn-fg:#92400e;
@@ -22,7 +22,7 @@
   :root {
     --bg:#14181d; --card:#1d232b; --text:#e6e9ed; --muted:#9aa5b1; --muted2:#8a95a1;
     --border:#2b333d; --border2:#323b46; --rowline:#28303a; --thbg:#232a33;
-    --accent:#7aa7ff; --green:#4ade80; --rise:#f87171; --footer:#5f6b78;
+    --accent:#7aa7ff; --green:#4ade80; --rise:#f87171; --footer:#5f6b78; --star-bg:#2b2610;
     --ev-bg:#0c4a6e; --ev-fg:#bae6fd; --phev-bg:#4c1d95; --phev-fg:#ddd6fe; --hyb-bg:#14532d; --hyb-fg:#bbf7d0;
     --tips-bg:#26210f; --tips-border:#4d4014;
     --warn-bg:#26210f; --warn-border:#4d4014; --warn-fg:#fcd34d;
@@ -50,7 +50,7 @@ h2 { font-size: 17px; margin: 30px 0 10px; border-bottom: 2px solid var(--border
 #hiddenToggle { background:none; border:none; font:inherit; font-size:12px; color:var(--accent); cursor:pointer; padding:0; text-decoration:underline; }
 
 .tablewrap { overflow-x:auto; }
-table { width:100%; border-collapse:collapse; background:var(--card); border-radius:10px; overflow:hidden; font-size:13px; box-shadow:0 1px 3px rgba(0,0,0,.05); min-width:760px; }
+table { width:100%; border-collapse:collapse; background:var(--card); border-radius:10px; overflow:hidden; font-size:13px; box-shadow:0 1px 3px rgba(0,0,0,.05); min-width:840px; }
 th, td { text-align:left; padding:9px 11px; border-bottom:1px solid var(--rowline); vertical-align:top; }
 th { background:var(--thbg); font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); cursor:pointer; user-select:none; white-space:nowrap; }
 th:hover, th:focus-visible { color:var(--accent); outline:none; }
@@ -62,6 +62,23 @@ tr.is-hidden td { opacity:.45; }
 .delta { display:block; font-size:10px; font-weight:700; cursor:default; }
 .delta.drop { color:var(--green); }
 .delta.rise { color:var(--rise); }
+.spark { display:block; margin-top:3px; }
+.spark.drop { color:var(--green); }
+.spark.rise { color:var(--rise); }
+tr.gone td { opacity:.55; }
+tr.gone .price { text-decoration:line-through; }
+.gonetag { display:inline-block; font-size:9px; font-weight:800; background:var(--muted2); color:var(--card); padding:1px 5px; border-radius:4px; margin-left:6px; vertical-align:middle; }
+tr.starred { background:var(--star-bg); }
+.actbtn { background:none; border:none; cursor:pointer; font-size:13px; padding:0 3px; color:var(--muted2); }
+.actbtn:hover { color:var(--accent); }
+.starbtn.on { color:#f59e0b; }
+.hidebtn:hover { color:var(--rise); }
+.c-act { white-space:nowrap; }
+.safelinks { font-size:10.5px; margin-top:1px; }
+.safelinks a { color:var(--muted2); text-decoration:underline; }
+.safelinks a:hover { color:var(--accent); }
+.unote { margin-top:4px; font-size:12px; background:var(--thbg); border-radius:6px; padding:3px 7px; white-space:pre-wrap; }
+.noteedit { display:block; width:100%; min-height:44px; margin-top:4px; font:inherit; font-size:12px; padding:4px 7px; border:1px solid var(--accent); border-radius:6px; background:var(--card); color:var(--text); }
 .veh-link { color:var(--accent); font-weight:700; text-decoration:none; }
 .veh-link:hover { text-decoration:underline; }
 .tag { display:inline-block; font-size:10px; font-weight:700; padding:2px 6px; border-radius:5px; }
@@ -92,7 +109,8 @@ footer { margin-top:34px; font-size:11px; color:var(--footer); }
   td.c-veh { display:block; font-size:14px; padding-right:0; }
   td.c-why { display:block; padding:4px 0 0; }
   td[data-l]::before { content:attr(data-l) " "; font-size:10px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted2); }
-  td.c-hide { float:right; padding:0; }
+  td.c-act { float:right; padding:0; }
+  tr.starred { border-color:#f59e0b; }
   tr.is-hidden { opacity:.5; }
   tr.is-hidden td { opacity:1; }
 }
@@ -141,6 +159,7 @@ footer { margin-top:34px; font-size:11px; color:var(--footer); }
       <option value="price,0">Price ↓</option>
       <option value="miles,1">Miles ↑</option>
       <option value="dist,1">Distance ↑</option>
+      <option value="_days,0">Longest listed</option>
     </select>
     <button id="hiddenToggle" hidden></button>
   </div>
@@ -155,17 +174,18 @@ footer { margin-top:34px; font-size:11px; color:var(--footer); }
         <th scope="col" tabindex="0" data-k="price" data-t="n">Price<span class="arrow"></span></th>
         <th scope="col" tabindex="0" data-k="miles" data-t="n">Miles<span class="arrow"></span></th>
         <th scope="col" tabindex="0" data-k="mpg">MPG / range<span class="arrow"></span></th>
+        <th scope="col" tabindex="0" data-k="_days" data-t="n">Listed<span class="arrow"></span></th>
         <th scope="col" tabindex="0" data-k="dist" data-t="n">Dist<span class="arrow"></span></th>
         <th scope="col" tabindex="0" data-k="loc">Where<span class="arrow"></span></th>
         <th scope="col" tabindex="0" data-k="src">Source<span class="arrow"></span></th>
         <th scope="col" tabindex="0" data-k="why">Why it's here<span class="arrow"></span></th>
-        <th scope="col" aria-label="Hide"></th>
+        <th scope="col" aria-label="Actions"></th>
       </tr>
     </thead>
     <tbody></tbody>
   </table>
   </div>
-  <div class="legend">Distance = miles from Aurora 80015. Dealer prices are firm-ish; private/FB prices are negotiable (FB "$3,000" is often a placeholder — always message to confirm). <b class="new" style="margin-left:0">NEW</b> = first seen in the latest run. <b>▼/▲</b> under a price = change since the previous snapshot in <code>history/</code> (hover for the old price). Click a column header to sort; ✕ hides a listing you've ruled out (saved on this device).</div>
+  <div class="legend">Distance = miles from Aurora 80015. Dealer prices are firm-ish; private/FB prices are negotiable (FB "$3,000" is often a placeholder — always message to confirm). <b class="new" style="margin-left:0">NEW</b> = first seen in the latest run. <b>▼/▲</b> under a price = change since the previous snapshot in <code>history/</code> (hover for the old price; the mini price line appears once a few days of history exist). <b class="gonetag" style="margin-left:0">GONE</b> = was in the previous snapshot but has left the feed — likely sold or delisted. "Listed" = days since this tracker first saw it (a long-sitting car is negotiating leverage). Click a column header to sort. Per-row: ☆ pins your candidates to the top, 📝 keeps a note, ✕ hides it — all saved on this device only.</div>
 
   <h2>💡 Buying tips for this budget</h2>
   <div class="tips"><ul>
@@ -189,64 +209,126 @@ const rowKey = r => r.url || r.veh;
 let rows = [];
 let latestRun = null;
 let prevPrices = null; // {date: 'YYYY-MM-DD', prices: {rowKey: price}} from newest history snapshot
+let priceHistory = {}; // rowKey -> [{d: 'YYYY-MM-DD', p: price}] ascending across snapshots + current
 const state = { fuel: 'ALL', q: '', sortKey: null, sortAsc: true, sortNum: false, showHidden: false };
 
-let hidden = new Set();
-try { hidden = new Set(JSON.parse(localStorage.getItem('dcs-hidden') || '[]')); } catch (e) {}
-const saveHidden = () => { try { localStorage.setItem('dcs-hidden', JSON.stringify([...hidden])); } catch (e) {} };
+const loadSet = k => { try { return new Set(JSON.parse(localStorage.getItem(k) || '[]')); } catch (e) { return new Set(); } };
+const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+const hidden = loadSet('dcs-hidden');
+const starred = loadSet('dcs-starred');
+let notes = {};
+try { notes = JSON.parse(localStorage.getItem('dcs-notes') || '{}') || {}; } catch (e) {}
+const saveHidden = () => save('dcs-hidden', [...hidden]);
+const saveStarred = () => save('dcs-starred', [...starred]);
+const saveNotes = () => save('dcs-notes', notes);
 
 const tbody = document.querySelector('#grid tbody');
 
 function deltaHtml(r) {
-  if (!prevPrices) return '';
+  if (!prevPrices || r._gone) return '';
   const was = prevPrices.prices[rowKey(r)];
   if (typeof was !== 'number' || typeof r.price !== 'number' || was === r.price) return '';
   const d = r.price - was;
   return `<span class="delta ${d < 0 ? 'drop' : 'rise'}" title="was $${was.toLocaleString()} on ${esc(prevPrices.date)}">${d < 0 ? '▼' : '▲'} $${Math.abs(d).toLocaleString()}</span>`;
 }
 
-// Find the newest dated snapshot in history/ older than the current run,
-// walking back day by day (missing days just 404 and are skipped).
-async function loadPrevPrices() {
+function sparkHtml(r) {
+  const s = priceHistory[rowKey(r)];
+  if (r._gone || !s || s.length < 2) return '';
+  const ps = s.map(x => x.p);
+  const min = Math.min(...ps), max = Math.max(...ps);
+  if (min === max) return '';
+  const w = 56, h = 14, pad = 2;
+  const pts = s.map((x, i) =>
+    (pad + i * (w - 2 * pad) / (s.length - 1)).toFixed(1) + ',' +
+    (h - pad - (x.p - min) * (h - 2 * pad) / (max - min)).toFixed(1)).join(' ');
+  const trend = ps[ps.length - 1] <= ps[0] ? 'drop' : 'rise';
+  const title = s.map(x => x.d.slice(5).replace('-', '/') + ' $' + x.p.toLocaleString()).join(' · ');
+  return `<svg class="spark ${trend}" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img"><title>${esc(title)}</title><polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>`;
+}
+
+function safetyLinks(r) {
+  const m = /^(\d{4})\s+(\S+)\s+(.+)$/.exec(r.veh || '');
+  if (!m) return '';
+  const [, yr, make, model] = m;
+  const nhtsa = `https://www.nhtsa.gov/vehicle/${yr}/${encodeURIComponent(make.toUpperCase())}/${encodeURIComponent(model.split(/\s+/)[0].toUpperCase())}`;
+  const iihs = `https://www.google.com/search?q=${encodeURIComponent(`IIHS safety rating ${yr} ${make} ${model}`)}`;
+  return `<div class="safelinks"><a href="${esc(nhtsa)}" target="_blank" rel="noopener">NHTSA recalls</a> · <a href="${esc(iihs)}" target="_blank" rel="noopener">IIHS rating</a></div>`;
+}
+
+// Fetch every dated snapshot from the 14 days before the current run (missing
+// days 404 and are skipped). Powers price deltas, sparklines, and gone rows.
+async function loadHistory() {
   if (!latestRun) return;
   const base = new Date(latestRun + 'T12:00:00');
   if (isNaN(base)) return;
+  const dates = [];
   for (let i = 1; i <= 14; i++) {
     const d = new Date(base);
     d.setDate(base.getDate() - i);
-    const iso = d.toISOString().slice(0, 10);
-    try {
-      const resp = await fetch('history/' + iso + '.json?_=' + Date.now());
-      if (!resp.ok) continue;
-      const j = await resp.json();
-      const prices = {};
-      (j.listings || []).forEach(x => {
-        const k = x.url || x.veh;
-        if (k && typeof x.price === 'number') prices[k] = x.price;
-      });
-      prevPrices = { date: iso, prices };
-      applyView();
-      return;
-    } catch (e) { /* keep walking back */ }
+    dates.push(d.toISOString().slice(0, 10));
   }
+  const results = await Promise.allSettled(dates.map(iso =>
+    fetch('history/' + iso + '.json?_=' + Date.now())
+      .then(resp => resp.ok ? resp.json() : Promise.reject())
+      .then(j => ({ date: iso, listings: j.listings || [] }))
+  ));
+  const snaps = results.filter(r => r.status === 'fulfilled').map(r => r.value)
+    .sort((a, b) => a.date < b.date ? -1 : 1); // oldest first
+  if (!snaps.length) return;
+
+  priceHistory = {};
+  snaps.forEach(s => s.listings.forEach(x => {
+    const k = x.url || x.veh;
+    if (!k || typeof x.price !== 'number') return;
+    (priceHistory[k] = priceHistory[k] || []).push({ d: s.date, p: x.price });
+  }));
+
+  const newest = snaps[snaps.length - 1];
+  const prices = {};
+  newest.listings.forEach(x => { const k = x.url || x.veh; if (k && typeof x.price === 'number') prices[k] = x.price; });
+  prevPrices = { date: newest.date, prices };
+
+  // current prices complete each series; live keys also mark what's NOT gone
+  const liveKeys = new Set(rows.filter(r => !r._gone).map(rowKey));
+  rows.filter(r => !r._gone).forEach(r => {
+    if (typeof r.price === 'number') (priceHistory[rowKey(r)] = priceHistory[rowKey(r)] || []).push({ d: latestRun, p: r.price });
+  });
+
+  // gone = in the newest snapshot but no longer in the current feed
+  rows = rows.filter(r => !r._gone);
+  newest.listings.forEach(x => {
+    const k = x.url || x.veh;
+    if (k && !liveKeys.has(k)) rows.push({ ...x, _gone: true });
+  });
+
+  applyView();
 }
 
 function rowHtml(r, isHidden) {
-  const isNew = latestRun && r.firstSeen === latestRun;
+  const isNew = !r._gone && latestRun && r.firstSeen === latestRun;
   const url = safeUrl(r.url);
+  const key = rowKey(r);
+  const isStar = starred.has(key);
+  const note = notes[key];
   const veh = url ? `<a class="veh-link" href="${esc(url)}" target="_blank" rel="noopener">${esc(r.veh)} ↗</a>` : `<b>${esc(r.veh)}</b>`;
-  return `<tr class="${isHidden ? 'is-hidden' : ''}" data-key="${esc(rowKey(r))}">
-    <td class="rank">${esc(r.rank)}</td>
-    <td class="c-veh">${veh}${isNew ? '<span class="new">NEW</span>' : ''}</td>
+  return `<tr class="${isHidden ? 'is-hidden' : ''}${r._gone ? ' gone' : ''}${isStar ? ' starred' : ''}" data-key="${esc(key)}">
+    <td class="rank">${r._gone ? '–' : esc(r.rank)}</td>
+    <td class="c-veh">${veh}${isNew ? '<span class="new">NEW</span>' : ''}${r._gone ? '<span class="gonetag" title="Was in the previous snapshot but no longer in the feed — likely sold or delisted">GONE</span>' : ''}${safetyLinks(r)}</td>
     <td><span class="tag ${tagClass(r.type)}">${esc(r.type)}</span></td>
-    <td class="price">$${Number(r.price).toLocaleString()}${deltaHtml(r)}</td>
+    <td class="price">$${Number(r.price).toLocaleString()}${deltaHtml(r)}${sparkHtml(r)}</td>
     <td data-l="miles">${r.miles != null ? Number(r.miles).toLocaleString() : '<span class="badge">ask</span>'}</td>
     <td data-l="mpg/range">${esc(r.mpg)}</td>
+    <td data-l="listed">${r._days != null ? (r._days === 0 ? 'today' : r._days + ' d') : ''}</td>
     <td data-l="away">${r.dist != null ? esc(r.dist) + ' mi' : ''}</td>
     <td data-l="in">${esc(r.loc)}</td>
     <td data-l="via">${esc(r.src)}</td>
-    <td class="note c-why">${esc(r.why)}</td>
-    <td class="c-hide"><button class="hidebtn" title="${isHidden ? 'Unhide this listing' : 'Hide this listing'}" aria-label="${isHidden ? 'Unhide' : 'Hide'} ${esc(r.veh)}">${isHidden ? '↩' : '✕'}</button></td>
+    <td class="note c-why">${esc(r.why)}${note ? `<div class="unote">📝 ${esc(note)}</div>` : ''}</td>
+    <td class="c-act">
+      <button class="actbtn starbtn ${isStar ? 'on' : ''}" title="${isStar ? 'Unstar' : 'Star: pin to top'}" aria-label="${isStar ? 'Unstar' : 'Star'} ${esc(r.veh)}">${isStar ? '★' : '☆'}</button>
+      <button class="actbtn notebtn" title="Add/edit note" aria-label="Note for ${esc(r.veh)}">📝</button>
+      <button class="actbtn hidebtn" title="${isHidden ? 'Unhide this listing' : 'Hide this listing'}" aria-label="${isHidden ? 'Unhide' : 'Hide'} ${esc(r.veh)}">${isHidden ? '↩' : '✕'}</button>
+    </td>
   </tr>`;
 }
 
@@ -255,27 +337,33 @@ function applyView() {
   if (state.fuel !== 'ALL') list = list.filter(r => r.type === state.fuel);
   if (state.q) {
     const q = state.q.toLowerCase();
-    list = list.filter(r => [r.veh, r.loc, r.src, r.why, r.mpg].join(' ').toLowerCase().includes(q));
+    list = list.filter(r => [r.veh, r.loc, r.src, r.why, r.mpg, notes[rowKey(r)]].filter(Boolean).join(' ').toLowerCase().includes(q));
   }
   const hiddenCount = list.filter(r => hidden.has(rowKey(r))).length;
   if (!state.showHidden) list = list.filter(r => !hidden.has(rowKey(r)));
 
-  if (state.sortKey) {
-    const { sortKey: k, sortAsc: a, sortNum: n } = state;
-    list = [...list].sort((x, y) => {
-      let u = x[k], v = y[k];
-      if (u == null) return 1;
-      if (v == null) return -1;
-      if (n) return a ? u - v : v - u;
-      return a ? String(u).localeCompare(String(v)) : String(v).localeCompare(String(u));
-    });
-  }
+  const { sortKey: k, sortAsc: a, sortNum: n } = state;
+  list = [...list].sort((x, y) => {
+    const sx = starred.has(rowKey(x)) ? 0 : 1, sy = starred.has(rowKey(y)) ? 0 : 1;
+    if (sx !== sy) return sx - sy;          // starred pin to top
+    const gx = x._gone ? 1 : 0, gy = y._gone ? 1 : 0;
+    if (gx !== gy) return gx - gy;          // gone sink to bottom
+    if (!k) return (x.rank ?? 999) - (y.rank ?? 999);
+    let u = x[k], v = y[k];
+    if (u == null) return 1;
+    if (v == null) return -1;
+    if (n) return a ? u - v : v - u;
+    return a ? String(u).localeCompare(String(v)) : String(v).localeCompare(String(u));
+  });
 
   tbody.innerHTML = list.length
     ? list.map(r => rowHtml(r, hidden.has(rowKey(r)))).join('')
-    : '<tr><td colspan="11" class="note" style="padding:16px">No listings match — clear the filters above.</td></tr>';
+    : '<tr><td colspan="12" class="note" style="padding:16px">No listings match — clear the filters above.</td></tr>';
 
-  document.getElementById('count').textContent = rows.length ? `(${list.length} of ${rows.length})` : '';
+  const live = rows.filter(r => !r._gone).length;
+  const shownLive = list.filter(r => !r._gone).length;
+  const shownGone = list.length - shownLive;
+  document.getElementById('count').textContent = live ? `(${shownLive} of ${live}${shownGone ? ` · ${shownGone} gone` : ''})` : '';
 
   const t = document.getElementById('hiddenToggle');
   if (hiddenCount) {
@@ -321,12 +409,41 @@ document.getElementById('q').addEventListener('input', e => { state.q = e.target
 
 document.getElementById('hiddenToggle').addEventListener('click', () => { state.showHidden = !state.showHidden; applyView(); });
 
+function openNoteEditor(tr, key) {
+  const td = tr.querySelector('.c-why');
+  let ta = td.querySelector('.noteedit');
+  if (ta) { ta.focus(); return; }
+  const disp = td.querySelector('.unote');
+  if (disp) disp.remove();
+  ta = document.createElement('textarea');
+  ta.className = 'noteedit';
+  ta.placeholder = 'Your note — saved on this device when you click away';
+  ta.value = notes[key] || '';
+  td.appendChild(ta);
+  ta.focus();
+  ta.addEventListener('blur', () => {
+    const v = ta.value.trim();
+    if (v) notes[key] = v; else delete notes[key];
+    saveNotes();
+    applyView();
+  });
+}
+
 tbody.addEventListener('click', e => {
-  const btn = e.target.closest('.hidebtn');
+  const btn = e.target.closest('.actbtn');
   if (!btn) return;
-  const key = btn.closest('tr').dataset.key;
-  hidden.has(key) ? hidden.delete(key) : hidden.add(key);
-  saveHidden();
+  const tr = btn.closest('tr');
+  const key = tr.dataset.key;
+  if (btn.classList.contains('hidebtn')) {
+    hidden.has(key) ? hidden.delete(key) : hidden.add(key);
+    saveHidden();
+  } else if (btn.classList.contains('starbtn')) {
+    starred.has(key) ? starred.delete(key) : starred.add(key);
+    saveStarred();
+  } else if (btn.classList.contains('notebtn')) {
+    openNoteEditor(tr, key);
+    return; // re-render happens when the editor blurs
+  }
   applyView();
 });
 
@@ -343,6 +460,11 @@ fetch('listings.json?_=' + Date.now())
   .then(d => {
     rows = d.listings || [];
     latestRun = d.updated ? d.updated.slice(0, 10) : null;
+    const runMs = latestRun ? Date.parse(latestRun) : NaN;
+    rows.forEach(r => {
+      const seen = r.firstSeen ? Date.parse(r.firstSeen) : NaN;
+      r._days = (!isNaN(runMs) && !isNaN(seen)) ? Math.max(0, Math.round((runMs - seen) / 86400000)) : null;
+    });
     const dt = d.updated ? new Date(d.updated) : null;
     if (dt && !isNaN(dt)) {
       document.getElementById('updated').innerHTML = 'last updated <b>' + esc(dt.toLocaleString()) + '</b> (' + relTime(dt) + ')';
@@ -356,7 +478,7 @@ fetch('listings.json?_=' + Date.now())
       document.getElementById('updated').textContent = '';
     }
     applyView();
-    loadPrevPrices();
+    loadHistory();
   })
   .catch(() => { document.getElementById('err').style.display = 'block'; document.getElementById('updated').textContent = ''; });
 </script>
