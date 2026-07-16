@@ -39,7 +39,21 @@ The daily task only rewrites the JSON, so updates are tiny, clean commits.
 ## Page features
 
 - **Sortable columns** (click a header, or use the sort dropdown on a phone) and
-  **fuel-type / text filters** to narrow the shortlist.
+  **fuel-type / seller-type / text filters** to narrow the shortlist.
+- **Value score (0–100)** on every row — computed on the page from safety (30%),
+  title/history risk (25%), price (20%), MPG (15%), and mileage (10%), so the
+  ranking is transparent and comparable across runs. Hover a pill for the recipe.
+- **Source status strip** — the engine reports every source it attempted
+  (`ok`/`empty`/`blocked`/`error`/`skipped` + count), so "no Facebook cars today"
+  and "Facebook wasn't reachable" look different on the page.
+- **Price vs mileage scatter chart** — each dot is a live listing, colored by
+  score; click a dot to jump to its row. Follows the active filters.
+- **Official safety & MPG data** — the engine looks up NHTSA overall stars
+  (`nhtsaStars`) and EPA combined MPG (`epaMpg`) per model-year; the page falls
+  back to a small built-in table for older data that lacks those fields.
+- **Per-listing car-seat note and next action** (👶 / ➡️ under "Why") — the
+  engine's take on rear-facing-seat fit and the single most useful next step
+  for that specific car.
 - **Card layout on phones** — no sideways scrolling.
 - **✕ hide** on each row to dismiss listings you've ruled out (stored in the
   browser's localStorage, per device); "Show N hidden" brings them back.
@@ -90,24 +104,39 @@ The daily task only rewrites the JSON, so updates are tiny, clean commits.
 ```json
 {
   "updated": "2026-07-15T08:00:00-06:00",
+  "sources": [
+    { "src": "Cars.com", "status": "ok", "count": 6, "note": "" },
+    { "src": "Facebook", "status": "blocked", "count": 0, "note": "login wall after retry" }
+  ],
   "listings": [
     {
       "rank": 1,
       "veh": "2010 Toyota Prius",
+      "year": 2010, "make": "Toyota", "model": "Prius",  // structured — used for NHTSA/recall links
       "type": "HYB",              // HYB | PHEV | EV
       "price": 7100,
       "miles": 170899,             // or null → shows "ask"
       "mpg": "48 mpg",
+      "epaMpg": 46,                // EPA combined (MPGe for EVs) — used for $/mo + score; or null
+      "nhtsaStars": 5,             // official NHTSA overall rating 1–5; or null
       "dist": 12,                  // miles from 80015
       "loc": "Littleton",
       "src": "Cars.com",
+      "sellerType": "Dealer",     // Dealer | Private | null — filterable
       "url": "https://…",          // direct link to the listing
+      "photo": null, "vin": null, "dealRating": null, "imvDelta": null,
+      "daysListed": null, "accident": null, "title": null, "recalls": 3,
+      "carSeatNotes": "Midsize rear seat fits rear-facing easily.",   // or null
+      "nextAction": "Ask for hybrid-battery health report.",         // or null
       "why": "Short reason it made the list.",
       "firstSeen": "2026-07-15"    // if == updated date, shows a NEW badge
     }
   ]
 }
 ```
+
+All enrichment fields are optional — the page renders older, thinner JSON
+(and `history/` snapshots) without them.
 
 The page marks a row **NEW** when its `firstSeen` matches the latest `updated` date,
 so you can spot fresh listings at a glance.

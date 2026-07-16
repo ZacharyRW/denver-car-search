@@ -82,7 +82,7 @@ h2 { font-size: 17px; margin: 28px 0 10px; border-bottom: 2px solid var(--border
 .chip { border:1px solid var(--border2); background:var(--card); color:var(--muted); font:inherit; font-size:12px; font-weight:600; padding:5px 12px; border-radius:999px; cursor:pointer; }
 .chip[aria-pressed="true"] { background:var(--accent); border-color:var(--accent); color:#fff; }
 #q { flex:1 1 140px; min-width:120px; max-width:220px; font:inherit; font-size:13px; padding:6px 10px; border:1px solid var(--border2); border-radius:8px; background:var(--card); color:var(--text); }
-#sortSel, #viewSel { font:inherit; font-size:13px; padding:6px 8px; border:1px solid var(--border2); border-radius:8px; background:var(--card); color:var(--text); }
+#sortSel, #viewSel, #sellerSel { font:inherit; font-size:13px; padding:6px 8px; border:1px solid var(--border2); border-radius:8px; background:var(--card); color:var(--text); }
 #sortSel { display:none; }
 .linkbtn { background:none; border:none; font:inherit; font-size:12px; color:var(--accent); cursor:pointer; padding:0; text-decoration:underline; }
 .spacer { flex:1 1 auto; }
@@ -183,6 +183,34 @@ tr.hl { animation:hlrow 2s ease; }
 .card .why { font-size:12px; color:var(--muted2); }
 .card .cardfoot { margin-top:auto; display:flex; align-items:center; gap:6px; padding-top:6px; flex-wrap:wrap; }
 
+/* source status strip */
+#sources { display:none; flex-wrap:wrap; gap:6px; align-items:center; margin:0 0 14px; font-size:11.5px; }
+#sources.on { display:flex; }
+#sources .srclab { color:var(--muted2); font-weight:700; text-transform:uppercase; font-size:10px; letter-spacing:.03em; }
+.srcchip { display:inline-flex; gap:4px; align-items:center; border:1px solid var(--border2); border-radius:999px; padding:2px 9px; background:var(--card); color:var(--muted); font-weight:600; cursor:default; }
+.srcchip.s-ok { color:var(--pass); }
+.srcchip.s-empty { color:var(--muted2); }
+.srcchip.s-blocked, .srcchip.s-error { color:var(--fail); border-color:var(--err-border); background:var(--err-bg); }
+.srcchip.s-skipped { color:var(--marg); }
+
+/* score */
+.score-pill { display:inline-block; min-width:30px; text-align:center; font-weight:800; font-size:12px; padding:2px 7px; border-radius:999px; cursor:default; }
+.score-hi { background:var(--deal-great-bg); color:var(--deal-great-fg); }
+.score-mid { background:var(--warn-bg); color:var(--warn-fg); border:1px solid var(--warn-border); }
+.score-lo { background:var(--deal-bad-bg); color:var(--deal-bad-fg); }
+
+/* per-listing engine notes */
+.enote { margin-top:4px; font-size:11.5px; color:var(--muted); }
+.enote b { font-weight:700; }
+
+/* scatter chart */
+#scatterwrap { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:12px 14px 8px; margin-top:14px; }
+#scatterwrap h3 { margin:0 0 2px; font-size:13px; }
+#scatterwrap .schint { font-size:11px; color:var(--muted2); margin-bottom:4px; }
+#scatter { width:100%; height:auto; display:block; }
+#scatter circle { cursor:pointer; }
+#scatter .axlab { font-size:10px; fill:var(--muted2); }
+
 footer { margin-top:34px; font-size:11px; color:var(--footer); }
 .tips { background:var(--tips-bg); border:1px solid var(--tips-border); border-radius:10px; padding:12px 16px; font-size:12.5px; }
 .tips li { margin:4px 0; }
@@ -228,6 +256,7 @@ footer { margin-top:34px; font-size:11px; color:var(--footer); }
 
   <div id="err">Couldn't load <code>listings.json</code>. If you opened this file directly from disk, the browser blocks local fetches — view it through the GitHub Pages URL instead.</div>
   <div id="stale"></div>
+  <div id="sources"></div>
 
   <div class="dash" id="dash"></div>
 
@@ -263,8 +292,14 @@ footer { margin-top:34px; font-size:11px; color:var(--footer); }
     <button class="chip" data-fuel="PHEV" aria-pressed="false">Plug-in</button>
     <button class="chip" data-fuel="EV" aria-pressed="false">EV</button>
     <input id="q" type="search" placeholder="Filter: prius, littleton…" aria-label="Filter listings">
+    <select id="sellerSel" aria-label="Seller type" title="Dealer or private seller">
+      <option value="ALL">All sellers</option>
+      <option value="Dealer">Dealer</option>
+      <option value="Private">Private</option>
+    </select>
     <select id="sortSel" aria-label="Sort by">
       <option value="rank,1">Sort: rank</option>
+      <option value="_score,0">Best score</option>
       <option value="price,1">Price ↑</option>
       <option value="price,0">Price ↓</option>
       <option value="miles,1">Miles ↑</option>
@@ -286,6 +321,7 @@ footer { margin-top:34px; font-size:11px; color:var(--footer); }
     <thead>
       <tr>
         <th scope="col" tabindex="0" data-k="rank" data-t="n">#<span class="arrow"></span></th>
+        <th scope="col" tabindex="0" data-k="_score" data-t="n" title="0–100 value score: safety 30% · title/history risk 25% · price 20% · MPG 15% · mileage 10%">Score<span class="arrow"></span></th>
         <th scope="col" tabindex="0" data-k="veh">Vehicle<span class="arrow"></span></th>
         <th scope="col" tabindex="0" data-k="type">Fuel<span class="arrow"></span></th>
         <th scope="col" tabindex="0" data-k="price" data-t="n">Price / deal<span class="arrow"></span></th>
@@ -307,7 +343,13 @@ footer { margin-top:34px; font-size:11px; color:var(--footer); }
   </div>
   <div id="cards"></div>
 
-  <div class="legend">Distance = miles from Aurora 80015. <b class="new" style="margin-left:0">NEW</b> = first seen in the latest run · <b>▼/▲</b> under a price = change vs the previous <code>history/</code> snapshot (mini price line appears once a few days exist) · <b class="gonetag" style="margin-left:0">GONE</b> = left the feed, likely sold — its final price + days listed is negotiating intel. "Listed" = days since this tracker first saw it. <b>$/mo</b> = estimated energy to run <i>your</i> commit (~550 mi/mo) at $3.68/gal or ~$0.14/kWh home charging. <b>Winter</b> = does an EV cover the 25-mi commute at −10 °F (✓ comfortably, ⚠ tight, ✗ no); L1 adds ~40 mi overnight. <b>Safety</b> from NHTSA/IIHS — click a car's NHTSA/IIHS links to verify. Per-row: pick a <b>status</b> stage to pin & track, 📝 note, 🔍 PPI checklist, ⇄ compare, ✕ hide. Stars/notes/stages save on this device; ⬆ Sync exports them for cross-device.</div>
+  <div id="scatterwrap" hidden>
+    <h3>📈 Price vs mileage</h3>
+    <div class="schint">Each dot is a live listing (follows the filters above) — lower-left is more car for the money. Green = score ≥ 80, amber ≥ 65, red below. Click a dot to jump to its row.</div>
+    <svg id="scatter" viewBox="0 0 560 260" role="img" aria-label="Price versus mileage scatter chart"></svg>
+  </div>
+
+  <div class="legend"><b>Score</b> = 0–100 value score computed on the page: safety 30% (NHTSA stars) · title/history risk 25% · price 20% · MPG 15% · mileage 10% — hover a pill for the recipe. Distance = miles from Aurora 80015. <b class="new" style="margin-left:0">NEW</b> = first seen in the latest run · <b>▼/▲</b> under a price = change vs the previous <code>history/</code> snapshot (mini price line appears once a few days exist) · <b class="gonetag" style="margin-left:0">GONE</b> = left the feed, likely sold — its final price + days listed is negotiating intel. "Listed" = days since this tracker first saw it. <b>$/mo</b> = estimated energy to run <i>your</i> commit (~550 mi/mo) at $3.68/gal or ~$0.14/kWh home charging. <b>Winter</b> = does an EV cover the 25-mi commute at −10 °F (✓ comfortably, ⚠ tight, ✗ no); L1 adds ~40 mi overnight. <b>Safety</b> from NHTSA/IIHS — click a car's NHTSA/IIHS links to verify. Per-row: pick a <b>status</b> stage to pin & track, 📝 note, 🔍 PPI checklist, ⇄ compare, ✕ hide. Stars/notes/stages save on this device; ⬆ Sync exports them for cross-device. 👶 / ➡️ under "Why" = the search engine's car-seat fit note and suggested next step for that specific car.</div>
 
   <h2>💡 Buying tips for this budget</h2>
   <div class="tips"><ul>
@@ -355,7 +397,7 @@ applyTheme();
 // Commute economics: ~25 mi round trip x ~22 workdays ~= 550 mi/mo.
 const COMMUTE = { milesMo: 550, roundTrip: 25, gas: 3.68, elec: 0.14, evMiKwh: 3.3, phevMiKwh: 3.0 };
 function monthlyCost(r){
-  if (r.type === 'HYB') { const mpg = parseFloat(String(r.mpg||'').replace(/[^0-9.]/g,'')); if (!mpg) return null; return (COMMUTE.milesMo/mpg)*COMMUTE.gas; }
+  if (r.type === 'HYB') { const mpg = (typeof r.epaMpg === 'number' && r.epaMpg > 0) ? r.epaMpg : parseFloat(String(r.mpg||'').replace(/[^0-9.]/g,'')); if (!mpg) return null; return (COMMUTE.milesMo/mpg)*COMMUTE.gas; }
   if (r.type === 'EV')  return (COMMUTE.milesMo/COMMUTE.evMiKwh)*COMMUTE.elec;
   if (r.type === 'PHEV') return (COMMUTE.milesMo/COMMUTE.phevMiKwh)*COMMUTE.elec;
   return null;
@@ -384,6 +426,47 @@ function safetyFor(veh){
   return null;
 }
 function starStr(n){ return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5-n); }
+// Structured year/make/model from the data when the engine provides it; parse veh as fallback
+function ymm(r){
+  if (r.year && r.make && r.model) return { yr: String(r.year), make: String(r.make), model: String(r.model) };
+  const m = /^(\d{4})\s+(\S+)\s+(.+)$/.exec(r.veh || '');
+  return m ? { yr: m[1], make: m[2], model: m[3] } : null;
+}
+// Official NHTSA stars from the data (engine API lookup) win; hardcoded table is the fallback
+function safetyInfo(r){
+  const t = safetyFor(r.veh);
+  if (typeof r.nhtsaStars === 'number' && r.nhtsaStars >= 1 && r.nhtsaStars <= 5)
+    return { n: r.nhtsaStars, i: t ? t.i : null, note: 'Official NHTSA overall rating' + (t ? ' · ' + t.note : '') };
+  return t;
+}
+/* ---------- 0–100 value score (same recipe on every device, explainable) ---------- */
+const clamp100 = v => Math.max(0, Math.min(100, v));
+function mpgNum(r){
+  if (typeof r.epaMpg === 'number' && r.epaMpg > 0) return r.epaMpg;
+  const m = /(\d+(?:\.\d+)?)/.exec(String(r.mpg || ''));
+  return m ? parseFloat(m[1]) : 0;
+}
+function scoreFor(r){
+  if (r._score != null) return r._score;
+  const s = safetyInfo(r);
+  const safety = s ? clamp100(s.n * 20) : 60;              // unknown safety = neutral 60
+  const mpg = mpgNum(r);
+  const mpgS = mpg ? clamp100((mpg - 20) * 5) : 50;         // 40 mpg → 100
+  const priceS = clamp100(100 - (Number(r.price) - 4500) / 75);   // $4.5k → 100, $12k → 0
+  const milesS = r.miles == null ? 40 : clamp100(100 - (r.miles - 60000) / 1400);
+  let risk = 100;
+  if (r.title && !/^clean/i.test(String(r.title))) risk = 25;
+  if (r.accident && /[1-9]/.test(String(r.accident))) risk -= 20;
+  if (typeof r.recalls === 'number' && r.recalls >= 5) risk -= 10;
+  r._score = Math.round(safety * .30 + clamp100(risk) * .25 + priceS * .20 + mpgS * .15 + milesS * .10);
+  return r._score;
+}
+function scoreHtml(r){
+  const v = scoreFor(r);
+  const cls = v >= 80 ? 'score-hi' : v >= 65 ? 'score-mid' : 'score-lo';
+  return `<span class="score-pill ${cls}" title="Value score ${v}/100 — safety 30% · title/history 25% · price 20% · MPG 15% · mileage 10%">${v}</span>`;
+}
+const enotesHtml = r => `${r.carSeatNotes?`<div class="enote">👶 ${esc(r.carSeatNotes)}</div>`:''}${r.nextAction?`<div class="enote">➡️ <b>Next:</b> ${esc(r.nextAction)}</div>`:''}`;
 // PPI / test-drive checklist, fuel-type specific
 function ppiItems(type){
   const common = ['Independent pre-purchase inspection booked','VIN title/history clean (no salvage/rebuilt)','Tires & brakes have life left','No dashboard warning lights','Test drive: brakes, alignment, no shudder','LATCH child-seat anchors present & working','A/C and heat both work'];
@@ -430,7 +513,7 @@ let latestRun = null;
 let prevPrices = null;
 let priceHistory = {};
 const compare = new Set();
-const state = { fuel: 'ALL', q: '', sortKey: null, sortAsc: true, sortNum: false, showHidden: false, view: 'table' };
+const state = { fuel: 'ALL', seller: 'ALL', q: '', sortKey: null, sortAsc: true, sortNum: false, showHidden: false, view: 'table' };
 try { const v = localStorage.getItem('dcs-view'); if (v) state.view = v; } catch(e){}
 
 const tbody = document.querySelector('#grid tbody');
@@ -469,18 +552,17 @@ function imvBadge(r){
   return `<span class="imv ${under?'under':'over'}">${under?'$'+Math.abs(r.imvDelta).toLocaleString()+' under mkt':'$'+r.imvDelta.toLocaleString()+' over mkt'}</span>`;
 }
 function safetyLinks(r) {
-  const m = /^(\d{4})\s+(\S+)\s+(.+)$/.exec(r.veh || '');
-  if (!m) return '';
-  const [, yr, make, model] = m;
-  const nhtsa = `https://www.nhtsa.gov/vehicle/${yr}/${encodeURIComponent(make.toUpperCase())}/${encodeURIComponent(model.split(/\s+/)[0].toUpperCase())}`;
-  const iihs = `https://www.google.com/search?q=${encodeURIComponent('IIHS safety rating '+yr+' '+make+' '+model)}`;
+  const v = ymm(r);
+  if (!v) return '';
+  const nhtsa = `https://www.nhtsa.gov/vehicle/${v.yr}/${encodeURIComponent(v.make.toUpperCase())}/${encodeURIComponent(v.model.toUpperCase())}`;
+  const iihs = `https://www.google.com/search?q=${encodeURIComponent('IIHS safety rating '+v.yr+' '+v.make+' '+v.model)}`;
   return `<a href="${esc(nhtsa)}" target="_blank" rel="noopener">NHTSA</a> · <a href="${esc(iihs)}" target="_blank" rel="noopener">IIHS</a>`;
 }
 function recallHtml(r){
   if (r.recalls == null) return '';
-  const m = /^(\d{4})\s+(\S+)\s+(\S+)/.exec(r.veh||'');
+  const v = ymm(r);
   const url = r.vin ? 'https://www.nhtsa.gov/recalls?vin='+encodeURIComponent(r.vin)
-            : m ? `https://www.nhtsa.gov/vehicle/${m[1]}/${encodeURIComponent(m[2].toUpperCase())}/${encodeURIComponent(m[3].toUpperCase())}` : null;
+            : v ? `https://www.nhtsa.gov/vehicle/${v.yr}/${encodeURIComponent(v.make.toUpperCase())}/${encodeURIComponent(v.model.toUpperCase())}` : null;
   const label = r.recalls === 0 ? '✓ 0 recalls' : '⚠ '+r.recalls+' recall'+(r.recalls>1?'s':'');
   const cls = r.recalls === 0 ? 'ok' : 'warn';
   const inner = url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${label}</a>` : label;
@@ -494,8 +576,8 @@ function historyFlags(r){
 }
 function moCell(r){ const v = monthlyCost(r); return v == null ? '<span class="note">—</span>' : `<span class="mo" title="~550 mi/mo commute @ $${COMMUTE.gas}/gal or $${COMMUTE.elec}/kWh">$${Math.round(v)}</span>`; }
 function winCell(r){ const w = winterInfo(r); if (!w) return '<span class="note" title="Gas/hybrid — no range limit">—</span>'; const t = w.status==='unk'?'range unknown — verify battery health':`≈${w.cold} mi at −10°F vs ${COMMUTE.roundTrip} mi commute; L1 adds ~40 mi overnight`; return `<span class="win ${w.status}" title="${esc(t)}">${w.txt}</span>`; }
-function safeCell(r){ const s = safetyFor(r.veh); if (!s) return '<span class="note">—</span>'; return `<span class="safe" title="${esc(s.note)}"><span class="stars">${starStr(s.n)}</span><br><span class="note">IIHS ${esc(s.i)}</span></span>`; }
-function safeSortVal(r){ const s = safetyFor(r.veh); return s ? s.n : 0; }
+function safeCell(r){ const s = safetyInfo(r); if (!s) return '<span class="note">—</span>'; return `<span class="safe" title="${esc(s.note)}"><span class="stars">${starStr(s.n)}</span>${s.i?`<br><span class="note">IIHS ${esc(s.i)}</span>`:''}</span>`; }
+function safeSortVal(r){ const s = safetyInfo(r); return s ? s.n : 0; }
 function thumbHtml(r, cls){ const u = safeUrl(r.photo); return u ? `<img class="${cls}" src="${esc(u)}" alt="" loading="lazy" onerror="this.classList.add('ph');this.removeAttribute('src');this.textContent='🚗';">` : `<div class="${cls} ph">🚗</div>`; }
 
 function stageSelect(r, key){
@@ -523,6 +605,7 @@ function rowHtml(r) {
   const hflags = historyFlags(r);
   return `<tr class="${isHidden?'is-hidden':''}${r._gone?' gone':''}${pinned?' pinned':''}" data-key="${esc(key)}">
     <td class="rank">${r._gone ? '–' : esc(r.rank)}</td>
+    <td>${scoreHtml(r)}</td>
     <td>
       <div class="veh-cell">${thumbHtml(r,'thumb')}<div>${veh}${isNew?'<span class="new">NEW</span>':''}${stageChip(key)}${r._gone?'<span class="gonetag" title="Was in the previous snapshot but no longer in the feed — likely sold or delisted">GONE</span>':''}
         <div class="sub2">${safetyLinks(r)}${r.recalls!=null?' · '+recallHtml(r):''}${r.vin?` · VIN …${esc(String(r.vin).slice(-6))}`:''}</div>
@@ -539,8 +622,8 @@ function rowHtml(r) {
     <td>${r._days!=null?(r._days===0?'today':r._days+' d'):''}${typeof r.daysListed==='number'?`<div class="note" title="Seller's days on market">src ${r.daysListed} d</div>`:''}</td>
     <td>${r.dist!=null?esc(r.dist)+' mi':''}</td>
     <td>${esc(r.loc)}</td>
-    <td>${esc(r.src)}</td>
-    <td class="note">${esc(r.why)}${cs.note?`<div class="unote">📝 ${esc(cs.note)}</div>`:''}${ppiHtml(r,key)}</td>
+    <td>${esc(r.src)}${r.sellerType?`<div class="note">${esc(r.sellerType)}</div>`:''}</td>
+    <td class="note">${esc(r.why)}${enotesHtml(r)}${cs.note?`<div class="unote">📝 ${esc(cs.note)}</div>`:''}${ppiHtml(r,key)}</td>
     <td class="c-act">
       ${stageSelect(r,key)}<br>
       <button class="actbtn notebtn" title="Add/edit note" aria-label="Note">📝</button>
@@ -567,17 +650,17 @@ function cardHtml(r){
     </div>
     <div class="body">
       <div class="title">${title} ${stageChip(key)}</div>
-      <div class="pricerow"><span class="price">$${Number(r.price).toLocaleString()}</span><span class="tag ${tagClass(r.type)}">${esc(r.type)}</span>${imvBadge(r)}${deltaHtml(r)}</div>
+      <div class="pricerow"><span class="price">$${Number(r.price).toLocaleString()}</span>${scoreHtml(r)}<span class="tag ${tagClass(r.type)}">${esc(r.type)}</span>${imvBadge(r)}${deltaHtml(r)}</div>
       <div class="specs"><span>${r.miles!=null?Number(r.miles).toLocaleString()+' mi':'miles: ask'}</span><span>${esc(r.mpg)}</span>${monthlyCost(r)!=null?`<span>~$${Math.round(monthlyCost(r))}/mo</span>`:''}<span>${r.dist!=null?esc(r.dist)+' mi · ':''}${esc(r.loc)}</span></div>
-      <div class="specs"><span class="safe" title="${esc((safetyFor(r.veh)||{}).note||'')}"><span class="stars">${starStr((safetyFor(r.veh)||{n:0}).n)}</span> ${safetyFor(r.veh)?'IIHS '+esc(safetyFor(r.veh).i):''}</span>${w?`<span class="win ${w.status}" title="winter range">Winter ${w.txt}</span>`:''}${r.recalls!=null?recallHtml(r):''}</div>
+      <div class="specs"><span class="safe" title="${esc((safetyInfo(r)||{}).note||'')}"><span class="stars">${starStr((safetyInfo(r)||{n:0}).n)}</span> ${(safetyInfo(r)||{}).i?'IIHS '+esc(safetyInfo(r).i):''}</span>${w?`<span class="win ${w.status}" title="winter range">Winter ${w.txt}</span>`:''}${r.recalls!=null?recallHtml(r):''}</div>
       ${hflags?`<div class="specs">${hflags}</div>`:''}
-      <div class="why">${esc(r.why)}${cs.note?`<div class="unote">📝 ${esc(cs.note)}</div>`:''}</div>
+      <div class="why">${esc(r.why)}${enotesHtml(r)}${cs.note?`<div class="unote">📝 ${esc(cs.note)}</div>`:''}</div>
       ${ppiHtml(r,key)}
       <div class="cardfoot">${stageSelect(r,key)}
         <button class="actbtn notebtn" title="Note" aria-label="Note">📝</button>
         <button class="actbtn cmpbtn ${compare.has(key)?'on':''}" title="Compare" aria-label="Compare">⇄</button>
         <button class="actbtn hidebtn" title="${isHidden?'Unhide':'Hide'}">${isHidden?'↩':'✕'}</button>
-        <span class="note" style="margin-left:auto">${esc(r.src)}${r._days!=null?' · '+(r._days===0?'today':r._days+'d'):''}</span>
+        <span class="note" style="margin-left:auto">${esc(r.src)}${r.sellerType?' · '+esc(r.sellerType):''}${r._days!=null?' · '+(r._days===0?'today':r._days+'d'):''}</span>
       </div>
     </div>
   </div>`;
@@ -621,12 +704,13 @@ function buildDash(){
 function applyView() {
   let list = rows;
   if (state.fuel !== 'ALL') list = list.filter(r => r.type === state.fuel);
-  if (state.q) { const q = state.q.toLowerCase(); list = list.filter(r => [r.veh, r.loc, r.src, r.why, r.mpg, r.dealRating, carState(rowKey(r)).note].filter(Boolean).join(' ').toLowerCase().includes(q)); }
+  if (state.seller !== 'ALL') list = list.filter(r => r.sellerType === state.seller);
+  if (state.q) { const q = state.q.toLowerCase(); list = list.filter(r => [r.veh, r.loc, r.src, r.sellerType, r.why, r.mpg, r.dealRating, carState(rowKey(r)).note].filter(Boolean).join(' ').toLowerCase().includes(q)); }
   const hiddenCount = list.filter(r => carState(rowKey(r)).hidden).length;
   if (!state.showHidden) list = list.filter(r => !carState(rowKey(r)).hidden);
 
   const { sortKey: k, sortAsc: a, sortNum: n } = state;
-  const val = (r) => k === '_mo' ? (monthlyCost(r) ?? 1e9) : k === '_safe' ? safeSortVal(r) : k === '_win' ? ({pass:0,marg:1,unk:2,fail:3}[(winterInfo(r)||{status:'z'}).status] ?? 4) : r[k];
+  const val = (r) => k === '_mo' ? (monthlyCost(r) ?? 1e9) : k === '_safe' ? safeSortVal(r) : k === '_score' ? scoreFor(r) : k === '_win' ? ({pass:0,marg:1,unk:2,fail:3}[(winterInfo(r)||{status:'z'}).status] ?? 4) : r[k];
   list = [...list].sort((x, y) => {
     const sx = carState(rowKey(x)).stage ? 0 : 1, sy = carState(rowKey(y)).stage ? 0 : 1;
     if (sx !== sy) return sx - sy;
@@ -640,10 +724,11 @@ function applyView() {
     return a ? String(u).localeCompare(String(v)) : String(v).localeCompare(String(u));
   });
 
-  tbody.innerHTML = list.length ? list.map(rowHtml).join('') : '<tr><td colspan="15" class="note" style="padding:16px">No listings match — clear the filters above.</td></tr>';
+  tbody.innerHTML = list.length ? list.map(rowHtml).join('') : '<tr><td colspan="16" class="note" style="padding:16px">No listings match — clear the filters above.</td></tr>';
   cardsEl.innerHTML = list.length ? list.map(cardHtml).join('') : '<div class="note" style="padding:16px">No listings match — clear the filters above.</div>';
   cardsEl.classList.toggle('on', state.view === 'cards');
   document.querySelector('.tablewrap').style.display = state.view === 'cards' ? 'none' : '';
+  renderScatter(list);
 
   const live = rows.filter(r => !r._gone).length;
   const shownLive = list.filter(r => !r._gone).length;
@@ -663,7 +748,7 @@ function applyView() {
 }
 
 function setSort(k, num, asc) {
-  state.sortAsc = asc != null ? asc : (state.sortKey === k ? !state.sortAsc : true);
+  state.sortAsc = asc != null ? asc : (state.sortKey === k ? !state.sortAsc : k !== '_score');
   state.sortKey = k; state.sortNum = num; applyView();
 }
 
@@ -678,6 +763,7 @@ document.getElementById('viewSel').value = state.view;
 document.getElementById('viewSel').addEventListener('change', e => { state.view = e.target.value; try{localStorage.setItem('dcs-view',state.view);}catch(x){} applyView(); });
 document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => { state.fuel = c.dataset.fuel; document.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', String(x === c))); applyView(); }));
 document.getElementById('q').addEventListener('input', e => { state.q = e.target.value.trim(); applyView(); });
+document.getElementById('sellerSel').addEventListener('change', e => { state.seller = e.target.value; applyView(); });
 document.getElementById('hiddenToggle').addEventListener('click', () => { state.showHidden = !state.showHidden; applyView(); });
 
 function openNoteEditor(container, key) {
@@ -708,12 +794,59 @@ tbody.addEventListener('change', handleAction);
 cardsEl.addEventListener('click', handleAction);
 cardsEl.addEventListener('change', handleAction);
 
-/* dashboard goto */
-document.getElementById('dash').addEventListener('click', e => {
-  const t = e.target.closest('[data-goto]'); if (!t) return;
-  const key = t.dataset.goto;
+/* jump to a listing's row/card and flash it */
+function gotoKey(key){
   const el = document.querySelector(`${state.view==='cards'?'#cards .card':'#grid tbody tr'}[data-key="${CSS.escape(key)}"]`);
   if (el) { el.scrollIntoView({behavior:'smooth', block:'center'}); el.classList.add('hl'); setTimeout(()=>el.classList.remove('hl'), 2100); }
+}
+document.getElementById('dash').addEventListener('click', e => {
+  const t = e.target.closest('[data-goto]'); if (t) gotoKey(t.dataset.goto);
+});
+
+/* ---------- source status strip ---------- */
+function renderSourceStrip(list){
+  const el = document.getElementById('sources');
+  if (!Array.isArray(list) || !list.length) { el.classList.remove('on'); return; }
+  const icon = { ok:'✓', empty:'∅', blocked:'✗', error:'✗', skipped:'⏭' };
+  el.innerHTML = '<span class="srclab">Sources this run</span>' + list.map(s => {
+    const st = ['ok','empty','blocked','error','skipped'].includes(String(s.status||'').toLowerCase()) ? String(s.status).toLowerCase() : 'empty';
+    const cnt = st === 'ok' && typeof s.count === 'number' ? ' ' + s.count : '';
+    const tip = [st, s.note].filter(Boolean).join(' — ');
+    return `<span class="srcchip s-${st}" title="${esc(tip)}">${icon[st]} ${esc(s.src || '?')}${cnt}</span>`;
+  }).join('');
+  el.classList.add('on');
+}
+
+/* ---------- price vs mileage scatter ---------- */
+function renderScatter(list){
+  const wrap = document.getElementById('scatterwrap');
+  const pts = list.filter(r => !r._gone && typeof r.price === 'number' && typeof r.miles === 'number');
+  if (pts.length < 2) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  const W = 560, H = 260, padL = 50, padR = 16, padT = 12, padB = 32;
+  const maxM = Math.max(...pts.map(r => r.miles)) * 1.06;
+  const maxP = Math.max(...pts.map(r => r.price)) * 1.08;
+  const X = m => padL + (m / maxM) * (W - padL - padR);
+  const Y = p => H - padB - (p / maxP) * (H - padT - padB);
+  let g = '';
+  for (let i = 1; i <= 3; i++) {
+    const p = Math.round(maxP * i / 3 / 500) * 500, m = Math.round(maxM * i / 3 / 10000) * 10000;
+    g += `<line x1="${padL}" y1="${Y(p).toFixed(1)}" x2="${W-padR}" y2="${Y(p).toFixed(1)}" stroke="var(--rowline)"/>`
+       + `<text class="axlab" x="${padL-6}" y="${(Y(p)+3).toFixed(1)}" text-anchor="end">$${(p/1000).toFixed(p%1000?1:0)}k</text>`
+       + `<text class="axlab" x="${X(m).toFixed(1)}" y="${H-padB+14}" text-anchor="middle">${Math.round(m/1000)}k mi</text>`;
+  }
+  const dots = pts.map(r => {
+    const v = scoreFor(r);
+    const fill = v >= 80 ? 'var(--pass)' : v >= 65 ? 'var(--marg)' : 'var(--fail)';
+    return `<circle cx="${X(r.miles).toFixed(1)}" cy="${Y(r.price).toFixed(1)}" r="6" fill="${fill}" opacity="0.85" data-goto="${esc(rowKey(r))}"><title>${esc(r.veh)} — $${Number(r.price).toLocaleString()} · ${Number(r.miles).toLocaleString()} mi · score ${v}</title></circle>`;
+  }).join('');
+  document.getElementById('scatter').innerHTML =
+    `<line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" stroke="var(--border2)"/>`
+    + `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H-padB}" stroke="var(--border2)"/>`
+    + g + dots;
+}
+document.getElementById('scatter').addEventListener('click', e => {
+  const t = e.target.closest('[data-goto]'); if (t) gotoKey(t.getAttribute('data-goto'));
 });
 
 /* ---------- compare ---------- */
@@ -729,14 +862,18 @@ document.getElementById('cmpGo').addEventListener('click', ()=>{
   if (cars.length < 2) return;
   const specRows = [
     ['Photo', c => `<img class="cmp-img" src="${esc(safeUrl(c.photo)||'')}" alt="" onerror="this.style.display='none'">`],
+    ['Score', c => scoreHtml(c)],
     ['Price', c => '$'+Number(c.price).toLocaleString()],
     ['Deal', c => (c.dealRating?esc(c.dealRating):'—') + (typeof c.imvDelta==='number'&&c.imvDelta!==0?` (${c.imvDelta<0?'$'+Math.abs(c.imvDelta)+' under':'$'+c.imvDelta+' over'})`:'')],
     ['Fuel', c => esc(c.type)],
+    ['Seller', c => c.sellerType?esc(c.sellerType):'—'],
     ['Miles', c => c.miles!=null?Number(c.miles).toLocaleString():'ask'],
     ['MPG / range', c => esc(c.mpg)],
     ['Est. $/mo', c => { const v=monthlyCost(c); return v==null?'—':'$'+Math.round(v); }],
     ['Winter (−10°F)', c => { const w=winterInfo(c); return w?(w.txt+(w.cold?` ≈${w.cold} mi`:'')):'— (gas)'; }],
-    ['Safety', c => { const s=safetyFor(c.veh); return s?`${starStr(s.n)} · IIHS ${esc(s.i)}`:'—'; }],
+    ['Safety', c => { const s=safetyInfo(c); return s?`${starStr(s.n)}${s.i?' · IIHS '+esc(s.i):''}`:'—'; }],
+    ['Car seat', c => c.carSeatNotes?`<span class="note">${esc(c.carSeatNotes)}</span>`:'—'],
+    ['Next step', c => c.nextAction?`<span class="note">${esc(c.nextAction)}</span>`:'—'],
     ['Recalls', c => c.recalls==null?'—':(c.recalls===0?'0':c.recalls)],
     ['History', c => [c.accident?esc(c.accident):'', c.title?esc(c.title)+' title':''].filter(Boolean).join(', ')||'—'],
     ['Distance', c => c.dist!=null?c.dist+' mi':'—'],
@@ -799,6 +936,7 @@ async function boot(){
     .then(r => { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
     .then(d => {
       rows = d.listings || [];
+      renderSourceStrip(d.sources);
       latestRun = d.updated ? d.updated.slice(0, 10) : null;
       const runMs = latestRun ? Date.parse(latestRun) : NaN;
       rows.forEach(r => { const seen = r.firstSeen ? Date.parse(r.firstSeen) : NaN; r._days = (!isNaN(runMs) && !isNaN(seen)) ? Math.max(0, Math.round((runMs - seen) / 86400000)) : null; });

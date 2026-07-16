@@ -20,13 +20,28 @@ jobs:
             const fail = m => { console.error("FAIL: " + m); process.exit(1); };
             if (isNaN(Date.parse(d.updated))) fail("updated is not a valid date: " + d.updated);
             if (!Array.isArray(d.listings)) fail("listings is not an array");
+            if (d.sources !== undefined) {
+              if (!Array.isArray(d.sources)) fail("sources must be an array");
+              const st = new Set(["ok", "empty", "blocked", "error", "skipped"]);
+              d.sources.forEach((s, i) => {
+                if (!s.src) fail("sources[" + i + "] missing src");
+                if (!st.has(s.status)) fail("sources[" + i + "] (" + s.src + "): bad status " + s.status);
+              });
+            }
             const types = new Set(["HYB", "PHEV", "EV"]);
+            const sellers = new Set(["Dealer", "Private", null, undefined]);
+            const numOrNull = (v) => v === null || v === undefined || typeof v === "number";
             d.listings.forEach((r, i) => {
               const at = "listings[" + i + "] (" + (r.veh || "?") + "): ";
               if (!r.veh) fail(at + "missing veh");
               if (typeof r.price !== "number") fail(at + "price must be a number");
               if (!types.has(r.type)) fail(at + "type must be HYB|PHEV|EV, got " + r.type);
               if (r.miles !== null && r.miles !== undefined && typeof r.miles !== "number") fail(at + "miles must be a number or null");
+              if (!numOrNull(r.year)) fail(at + "year must be a number or null");
+              if (!numOrNull(r.epaMpg)) fail(at + "epaMpg must be a number or null");
+              if (!numOrNull(r.nhtsaStars)) fail(at + "nhtsaStars must be a number or null");
+              if (typeof r.nhtsaStars === "number" && (r.nhtsaStars < 1 || r.nhtsaStars > 5)) fail(at + "nhtsaStars must be 1-5, got " + r.nhtsaStars);
+              if (!sellers.has(r.sellerType)) fail(at + "sellerType must be Dealer|Private|null, got " + r.sellerType);
               if (r.url && !/^https?:\/\//.test(r.url)) fail(at + "url must be http(s)");
               if (r.firstSeen && !/^\d{4}-\d{2}-\d{2}$/.test(r.firstSeen)) fail(at + "firstSeen must be YYYY-MM-DD");
             });
