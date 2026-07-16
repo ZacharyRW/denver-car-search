@@ -17,9 +17,14 @@
   --tips-bg:#fffbeb; --tips-border:#fde68a;
   --warn-bg:#fffbeb; --warn-border:#fde68a; --warn-fg:#92400e;
   --err-bg:#fef2f2; --err-border:#fecaca; --err-fg:#991b1b;
+  --deal-great-bg:#dcfce7; --deal-great-fg:#166534; --deal-good-bg:#e0f2fe; --deal-good-fg:#075985;
+  --deal-fair-bg:#f1f5f9; --deal-fair-fg:#475569; --deal-bad-bg:#fef2f2; --deal-bad-fg:#991b1b;
+  --tile-bg:#fff; --thumb-bg:#e8edf2;
+  --pass:#0b6b3a; --marg:#b45309; --fail:#b91c1c;
 }
+:root[data-theme="dark"], :root[data-theme="dark"] body { color-scheme: dark; }
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg:#14181d; --card:#1d232b; --text:#e6e9ed; --muted:#9aa5b1; --muted2:#8a95a1;
     --border:#2b333d; --border2:#323b46; --rowline:#28303a; --thbg:#232a33;
     --accent:#7aa7ff; --green:#4ade80; --rise:#f87171; --footer:#5f6b78; --star-bg:#2b2610;
@@ -27,17 +32,48 @@
     --tips-bg:#26210f; --tips-border:#4d4014;
     --warn-bg:#26210f; --warn-border:#4d4014; --warn-fg:#fcd34d;
     --err-bg:#2b1416; --err-border:#5c2226; --err-fg:#fca5a5;
+    --deal-great-bg:#14532d; --deal-great-fg:#bbf7d0; --deal-good-bg:#0c4a6e; --deal-good-fg:#bae6fd;
+    --deal-fair-bg:#232a33; --deal-fair-fg:#cbd5e1; --deal-bad-bg:#2b1416; --deal-bad-fg:#fca5a5;
+    --tile-bg:#1d232b; --thumb-bg:#28303a;
+    --pass:#4ade80; --marg:#fbbf24; --fail:#f87171;
   }
+}
+:root[data-theme="dark"] {
+  --bg:#14181d; --card:#1d232b; --text:#e6e9ed; --muted:#9aa5b1; --muted2:#8a95a1;
+  --border:#2b333d; --border2:#323b46; --rowline:#28303a; --thbg:#232a33;
+  --accent:#7aa7ff; --green:#4ade80; --rise:#f87171; --footer:#5f6b78; --star-bg:#2b2610;
+  --ev-bg:#0c4a6e; --ev-fg:#bae6fd; --phev-bg:#4c1d95; --phev-fg:#ddd6fe; --hyb-bg:#14532d; --hyb-fg:#bbf7d0;
+  --tips-bg:#26210f; --tips-border:#4d4014;
+  --warn-bg:#26210f; --warn-border:#4d4014; --warn-fg:#fcd34d;
+  --err-bg:#2b1416; --err-border:#5c2226; --err-fg:#fca5a5;
+  --deal-great-bg:#14532d; --deal-great-fg:#bbf7d0; --deal-good-bg:#0c4a6e; --deal-good-fg:#bae6fd;
+  --deal-fair-bg:#232a33; --deal-fair-fg:#cbd5e1; --deal-bad-bg:#2b1416; --deal-bad-fg:#fca5a5;
+  --tile-bg:#1d232b; --thumb-bg:#28303a;
+  --pass:#4ade80; --marg:#fbbf24; --fail:#f87171;
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.5; }
-.wrap { max-width: 1080px; margin: 0 auto; padding: 24px 16px 60px; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 20px 16px 60px; }
+.topbar { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
 h1 { font-size: 24px; margin: 0 0 4px; }
-.sub { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
-h2 { font-size: 17px; margin: 30px 0 10px; border-bottom: 2px solid var(--border); padding-bottom: 6px; }
+.sub { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+h2 { font-size: 17px; margin: 28px 0 10px; border-bottom: 2px solid var(--border); padding-bottom: 6px; }
+.themebtn { flex:none; background:var(--card); border:1px solid var(--border2); color:var(--text); border-radius:999px; padding:6px 12px; font:inherit; font-size:12px; font-weight:600; cursor:pointer; }
+.themebtn:hover { border-color:var(--accent); }
+
+/* dashboard tiles */
+.dash { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; margin:0 0 18px; }
+.tile { background:var(--tile-bg); border:1px solid var(--border); border-radius:10px; padding:10px 12px; text-align:left; cursor:pointer; font:inherit; color:var(--text); transition:.12s; }
+.tile:hover { border-color:var(--accent); box-shadow:0 2px 8px rgba(37,99,235,.12); }
+.tile .lab { font-size:10.5px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted2); font-weight:700; }
+.tile .val { font-size:19px; font-weight:800; margin-top:2px; }
+.tile .det { font-size:11px; color:var(--muted); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.tile.plain { cursor:default; }
+.tile.plain:hover { border-color:var(--border); box-shadow:none; }
+
 .crit { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:14px 16px; font-size:13px; display:flex; flex-wrap:wrap; gap:8px 20px; }
 .crit b { color:var(--green); }
-.searches { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; }
+.searches { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; }
 .searches a { display:block; background:var(--card); border:1px solid var(--border2); border-radius:9px; padding:11px 13px; text-decoration:none; color:var(--text); font-size:13px; font-weight:600; transition:.12s; }
 .searches a:hover { border-color:var(--accent); box-shadow:0 2px 8px rgba(37,99,235,.12); }
 .searches a span { display:block; font-weight:400; color:var(--muted2); font-size:11px; margin-top:2px; }
@@ -45,14 +81,17 @@ h2 { font-size: 17px; margin: 30px 0 10px; border-bottom: 2px solid var(--border
 .controls { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0 0 12px; }
 .chip { border:1px solid var(--border2); background:var(--card); color:var(--muted); font:inherit; font-size:12px; font-weight:600; padding:5px 12px; border-radius:999px; cursor:pointer; }
 .chip[aria-pressed="true"] { background:var(--accent); border-color:var(--accent); color:#fff; }
-#q { flex:1 1 140px; min-width:120px; max-width:240px; font:inherit; font-size:13px; padding:6px 10px; border:1px solid var(--border2); border-radius:8px; background:var(--card); color:var(--text); }
-#sortSel { display:none; font:inherit; font-size:13px; padding:6px 8px; border:1px solid var(--border2); border-radius:8px; background:var(--card); color:var(--text); }
-#hiddenToggle { background:none; border:none; font:inherit; font-size:12px; color:var(--accent); cursor:pointer; padding:0; text-decoration:underline; }
+#q { flex:1 1 140px; min-width:120px; max-width:220px; font:inherit; font-size:13px; padding:6px 10px; border:1px solid var(--border2); border-radius:8px; background:var(--card); color:var(--text); }
+#sortSel, #viewSel { font:inherit; font-size:13px; padding:6px 8px; border:1px solid var(--border2); border-radius:8px; background:var(--card); color:var(--text); }
+#sortSel { display:none; }
+.linkbtn { background:none; border:none; font:inherit; font-size:12px; color:var(--accent); cursor:pointer; padding:0; text-decoration:underline; }
+.spacer { flex:1 1 auto; }
 
+/* table */
 .tablewrap { overflow-x:auto; }
-table { width:100%; border-collapse:collapse; background:var(--card); border-radius:10px; overflow:hidden; font-size:13px; box-shadow:0 1px 3px rgba(0,0,0,.05); min-width:840px; }
-th, td { text-align:left; padding:9px 11px; border-bottom:1px solid var(--rowline); vertical-align:top; }
-th { background:var(--thbg); font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); cursor:pointer; user-select:none; white-space:nowrap; }
+table { width:100%; border-collapse:collapse; background:var(--card); border-radius:10px; overflow:hidden; font-size:13px; box-shadow:0 1px 3px rgba(0,0,0,.05); min-width:1080px; }
+th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--rowline); vertical-align:top; }
+th { background:var(--thbg); font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); cursor:pointer; user-select:none; white-space:nowrap; position:sticky; top:0; z-index:2; }
 th:hover, th:focus-visible { color:var(--accent); outline:none; }
 th .arrow { font-size:9px; }
 tr:last-child td { border-bottom:none; }
@@ -68,81 +107,152 @@ tr.is-hidden td { opacity:.45; }
 tr.gone td { opacity:.55; }
 tr.gone .price { text-decoration:line-through; }
 .gonetag { display:inline-block; font-size:9px; font-weight:800; background:var(--muted2); color:var(--card); padding:1px 5px; border-radius:4px; margin-left:6px; vertical-align:middle; }
-tr.starred { background:var(--star-bg); }
-.actbtn { background:none; border:none; cursor:pointer; font-size:13px; padding:0 3px; color:var(--muted2); }
-.actbtn:hover { color:var(--accent); }
-.starbtn.on { color:#f59e0b; }
-.hidebtn:hover { color:var(--rise); }
-.c-act { white-space:nowrap; }
-.safelinks { font-size:10.5px; margin-top:1px; }
-.safelinks a { color:var(--muted2); text-decoration:underline; }
-.safelinks a:hover { color:var(--accent); }
-.unote { margin-top:4px; font-size:12px; background:var(--thbg); border-radius:6px; padding:3px 7px; white-space:pre-wrap; }
-.noteedit { display:block; width:100%; min-height:44px; margin-top:4px; font:inherit; font-size:12px; padding:4px 7px; border:1px solid var(--accent); border-radius:6px; background:var(--card); color:var(--text); }
+tr.pinned { background:var(--star-bg); }
+tr.hl { animation:hlrow 2s ease; }
+@keyframes hlrow { 0%,40%{ background:rgba(37,99,235,.18);} 100%{ background:transparent;} }
+.veh-cell { display:flex; gap:9px; align-items:flex-start; }
+.thumb { flex:none; width:66px; height:50px; border-radius:6px; object-fit:cover; background:var(--thumb-bg); }
+.thumb.ph { display:flex; align-items:center; justify-content:center; font-size:20px; color:var(--muted2); }
 .veh-link { color:var(--accent); font-weight:700; text-decoration:none; }
 .veh-link:hover { text-decoration:underline; }
+.sub2 { font-size:11px; color:var(--muted2); margin-top:2px; }
 .tag { display:inline-block; font-size:10px; font-weight:700; padding:2px 6px; border-radius:5px; }
 .t-ev { background:var(--ev-bg); color:var(--ev-fg); }
 .t-phev { background:var(--phev-bg); color:var(--phev-fg); }
 .t-hyb { background:var(--hyb-bg); color:var(--hyb-fg); }
 .new { display:inline-block; font-size:9px; font-weight:800; background:#dc2626; color:#fff; padding:1px 5px; border-radius:4px; margin-left:6px; vertical-align:middle; }
+.deal { display:inline-block; font-size:10px; font-weight:700; padding:2px 6px; border-radius:5px; white-space:nowrap; }
+.deal-great { background:var(--deal-great-bg); color:var(--deal-great-fg); }
+.deal-good { background:var(--deal-good-bg); color:var(--deal-good-fg); }
+.deal-fair { background:var(--deal-fair-bg); color:var(--deal-fair-fg); }
+.deal-bad { background:var(--deal-bad-bg); color:var(--deal-bad-fg); }
+.imv { display:block; font-size:10.5px; font-weight:700; margin-top:2px; }
+.imv.under { color:var(--green); } .imv.over { color:var(--rise); }
+.flag { font-size:11px; }
+.flag.ok { color:var(--green); } .flag.warn { color:var(--marg); } .flag.bad { color:var(--fail); }
+.recall { display:inline-block; font-size:10px; font-weight:700; }
+.recall a { color:inherit; }
+.safe { font-size:12px; white-space:nowrap; }
+.stars { color:#f59e0b; letter-spacing:-1px; }
+.win { font-weight:700; font-size:12px; white-space:nowrap; }
+.win.pass{color:var(--pass);} .win.marg{color:var(--marg);} .win.fail{color:var(--fail);} .win.unk{color:var(--muted2);}
+.mo { font-weight:700; white-space:nowrap; }
 .note { font-size:12px; color:var(--muted2); }
+.unote { margin-top:4px; font-size:12px; background:var(--thbg); border-radius:6px; padding:3px 7px; white-space:pre-wrap; }
+.noteedit { display:block; width:100%; min-height:44px; margin-top:4px; font:inherit; font-size:12px; padding:4px 7px; border:1px solid var(--accent); border-radius:6px; background:var(--card); color:var(--text); }
 .badge { font-size:10px; color:#b45309; font-weight:600; }
-.hidebtn { background:none; border:none; color:var(--muted2); cursor:pointer; font-size:12px; padding:0 2px; }
-.hidebtn:hover { color:var(--err-fg); }
 .legend { font-size:12px; color:var(--muted2); margin:8px 0 0; }
+.count { font-weight:400; color:var(--muted2); font-size:13px; }
+
+.stagesel { font:inherit; font-size:11px; padding:2px 4px; border:1px solid var(--border2); border-radius:6px; background:var(--card); color:var(--text); max-width:118px; }
+.stagesel[data-stage=""] { color:var(--muted2); }
+.stage-chip { display:inline-block; font-size:9px; font-weight:800; padding:1px 6px; border-radius:999px; color:#fff; vertical-align:middle; margin-left:6px; }
+.s-shortlisted{background:#64748b;} .s-messaged{background:#7c3aed;} .s-test-drive{background:#2563eb;} .s-inspected{background:#0891b2;} .s-offer{background:#059669;}
+.actbtn { background:none; border:none; cursor:pointer; font-size:13px; padding:0 3px; color:var(--muted2); }
+.actbtn:hover { color:var(--accent); }
+.hidebtn:hover { color:var(--fail); }
+.cmpbtn.on { color:var(--accent); }
+.c-act { white-space:nowrap; }
+.expand { margin-top:6px; }
+.exp-toggle { background:none; border:none; color:var(--accent); font:inherit; font-size:11.5px; cursor:pointer; padding:0; text-decoration:underline; }
+.ppi { margin-top:6px; padding:8px 10px; background:var(--thbg); border-radius:8px; font-size:12px; display:none; }
+.ppi.open { display:block; }
+.ppi h4 { margin:0 0 5px; font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted2); }
+.ppi label { display:flex; gap:7px; align-items:flex-start; padding:2px 0; cursor:pointer; }
+.ppi input { margin-top:3px; }
+.ppi .done { text-decoration:line-through; color:var(--muted2); }
+
+/* card grid */
+#cards { display:none; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px; }
+#cards.on { display:grid; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.05); display:flex; flex-direction:column; }
+.card.pinned { border-color:#f59e0b; }
+.card.gone { opacity:.6; }
+.card.hl { outline:2px solid var(--accent); }
+.card .ph-wrap { position:relative; aspect-ratio:16/10; background:var(--thumb-bg); }
+.card .ph-wrap img { width:100%; height:100%; object-fit:cover; display:block; }
+.card .ph-wrap .noimg { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:40px; color:var(--muted2); }
+.card .ph-badges { position:absolute; top:8px; left:8px; right:8px; display:flex; justify-content:space-between; align-items:flex-start; gap:6px; flex-wrap:wrap; }
+.card .rank-b { background:rgba(0,0,0,.62); color:#fff; font-weight:800; font-size:12px; padding:2px 8px; border-radius:999px; }
+.card .body { padding:11px 13px 12px; display:flex; flex-direction:column; gap:5px; flex:1; }
+.card .title { font-size:15px; font-weight:700; }
+.card .title a { color:var(--accent); text-decoration:none; }
+.card .pricerow { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
+.card .pricerow .price { font-size:18px; }
+.card .specs { font-size:12px; color:var(--muted); display:flex; flex-wrap:wrap; gap:2px 12px; }
+.card .why { font-size:12px; color:var(--muted2); }
+.card .cardfoot { margin-top:auto; display:flex; align-items:center; gap:6px; padding-top:6px; flex-wrap:wrap; }
+
 footer { margin-top:34px; font-size:11px; color:var(--footer); }
 .tips { background:var(--tips-bg); border:1px solid var(--tips-border); border-radius:10px; padding:12px 16px; font-size:12.5px; }
 .tips li { margin:4px 0; }
 #err { display:none; background:var(--err-bg); border:1px solid var(--err-border); color:var(--err-fg); padding:12px 16px; border-radius:10px; font-size:13px; }
 #stale { display:none; background:var(--warn-bg); border:1px solid var(--warn-border); color:var(--warn-fg); padding:10px 16px; border-radius:10px; font-size:13px; margin-bottom:14px; }
-.count { font-weight:400; color:var(--muted2); font-size:13px; }
 
-/* phone: table becomes cards */
-@media (max-width:680px) {
+/* compare bar + modal */
+#cmpbar { position:fixed; left:0; right:0; bottom:0; background:var(--card); border-top:1px solid var(--border); box-shadow:0 -2px 12px rgba(0,0,0,.12); padding:9px 16px; display:none; align-items:center; gap:12px; z-index:30; font-size:13px; }
+#cmpbar.on { display:flex; }
+#cmpbar .go { background:var(--accent); color:#fff; border:none; border-radius:8px; padding:7px 14px; font:inherit; font-weight:700; cursor:pointer; }
+#cmpbar .clr { background:none; border:none; color:var(--muted); text-decoration:underline; cursor:pointer; font:inherit; }
+#modal { position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:flex-start; justify-content:center; z-index:40; padding:24px 12px; overflow:auto; }
+#modal.on { display:flex; }
+.mbox { background:var(--card); border-radius:12px; max-width:820px; width:100%; padding:18px 18px 22px; }
+.mbox .mhead { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+.mbox h3 { margin:0; font-size:17px; }
+.mbox .x { background:none; border:none; font-size:20px; cursor:pointer; color:var(--muted); }
+.cmp-table { width:100%; border-collapse:collapse; font-size:12.5px; min-width:0; box-shadow:none; }
+.cmp-table th, .cmp-table td { border:1px solid var(--rowline); padding:7px 9px; text-align:left; position:static; }
+.cmp-table th { background:var(--thbg); position:static; }
+.cmp-table td.lab { font-weight:700; background:var(--thbg); white-space:nowrap; width:120px; }
+.cmp-img { width:100%; height:92px; object-fit:cover; border-radius:6px; background:var(--thumb-bg); }
+
+@media (max-width:760px) {
   #sortSel { display:inline-block; }
-  .tablewrap { overflow:visible; }
-  table { min-width:0; background:none; box-shadow:none; }
-  thead { display:none; }
-  tbody tr { display:block; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:10px 12px 8px; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,.05); }
-  tbody td { display:inline-block; border:none; padding:0 10px 4px 0; }
-  td.c-veh { display:block; font-size:14px; padding-right:0; }
-  td.c-why { display:block; padding:4px 0 0; }
-  td[data-l]::before { content:attr(data-l) " "; font-size:10px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted2); }
-  td.c-act { float:right; padding:0; }
-  tr.starred { border-color:#f59e0b; }
-  tr.is-hidden { opacity:.5; }
-  tr.is-hidden td { opacity:1; }
+  th[data-k] { display:none; }
+  .tablewrap { display:none; }
+  #cards { display:grid; }
+  #viewSel { display:none; }
+  .dash { grid-template-columns:repeat(2,1fr); }
 }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>🚗 Denver Car Search Tracker</h1>
-  <div class="sub">Reliable, safe, efficient family car · under $10,000 · within 100 mi of Aurora 80015 · <span id="updated">loading…</span></div>
+  <div class="topbar">
+    <div>
+      <h1>🚗 Denver Car Search Tracker</h1>
+      <div class="sub">Reliable, safe, efficient family car · under $10,000 · within 100 mi of Aurora 80015 · <span id="updated">loading…</span></div>
+    </div>
+    <button class="themebtn" id="themeBtn" title="Toggle light / dark / auto">🌗 Auto</button>
+  </div>
 
   <div id="err">Couldn't load <code>listings.json</code>. If you opened this file directly from disk, the browser blocks local fetches — view it through the GitHub Pages URL instead.</div>
   <div id="stale"></div>
+
+  <div class="dash" id="dash"></div>
 
   <div class="crit">
     <div><b>Budget</b> ≤ $10k (flexible)</div>
     <div><b>Type</b> Hybrid / EV / efficient gas</div>
     <div><b>Must have</b> Reliability · child safety · good MPG</div>
     <div><b>Home charging</b> Level 1 (regular outlet)</div>
-    <div><b>Use</b> Aurora → Lone Tree commute + daycare</div>
+    <div><b>Use</b> Aurora → Lone Tree commute + daycare (~25 mi/day)</div>
   </div>
 
   <h2>🔁 Saved searches — click to see fresh live listings</h2>
   <div class="searches">
     <a href="https://www.cars.com/shopping/results/?zip=80015&maximum_distance=100&list_price_max=10000&stock_type=used&fuel_slugs%5B%5D=hybrid&fuel_slugs%5B%5D=electric&sort=list_price" target="_blank" rel="noopener">Cars.com — Hybrid + EV<span>≤$10k · 100 mi · price ↑</span></a>
-    <a href="https://www.cargurus.com/Cars/inventorylisting/viewDetailsFilterViewInventoryListing.action?zip=80015&distance=100&maxPrice=10000&sortType=PRICE&sortDir=ASC" target="_blank" rel="noopener">CarGurus — All<span>≤$10k · 100 mi (set fuel = hybrid/EV)</span></a>
+    <a href="https://www.cargurus.com/Cars/inventorylisting/viewDetailsFilterViewInventoryListing.action?zip=80015&distance=100&maxPrice=10000&sortType=PRICE&sortDir=ASC" target="_blank" rel="noopener">CarGurus — All<span>≤$10k · 100 mi · deal rating + IMV</span></a>
     <a href="https://www.autotrader.com/cars-for-sale/hybrid/aurora-co-80015?maxPrice=10000&searchRadius=100&sortBy=priceASC" target="_blank" rel="noopener">Autotrader — Hybrid<span>≤$10k · 100 mi</span></a>
+    <a href="https://www.carvana.com/cars/hybrid?price=0-10000" target="_blank" rel="noopener">Carvana — Hybrid<span>≤$10k · ships to you</span></a>
+    <a href="https://www.ebay.com/sch/6001/i.html?_nkw=hybrid+prius+leaf&_udhi=10000&_stpos=80015&_sadis=100&LH_BIN=1" target="_blank" rel="noopener">eBay Motors — BIN<span>≤$10k · 100 mi</span></a>
+    <a href="https://offerup.com/search?q=prius%20hybrid&price_max=10000" target="_blank" rel="noopener">OfferUp — near you<span>≤$10k</span></a>
+    <a href="https://www.hertzcarsales.com/" target="_blank" rel="noopener">Hertz Car Sales<span>Fleet · clean history · no-haggle</span></a>
     <a href="https://denver.craigslist.org/search/cta?max_price=10000&query=hybrid&sort=priceasc" target="_blank" rel="noopener">Craigslist — "hybrid"<span>≤$10k · price ↑</span></a>
     <a href="https://denver.craigslist.org/search/cta?max_price=10000&query=prius&sort=priceasc" target="_blank" rel="noopener">Craigslist — "prius"<span>≤$10k · price ↑</span></a>
     <a href="https://denver.craigslist.org/search/cta?max_price=10000&query=leaf&sort=priceasc" target="_blank" rel="noopener">Craigslist — "leaf"<span>≤$10k · price ↑</span></a>
-    <a href="https://www.facebook.com/marketplace/denver/search?minPrice=3000&maxPrice=10000&sortBy=price_ascend&query=hybrid" target="_blank" rel="noopener">FB Marketplace — "hybrid"<span>$3k–$10k · 100 mi · price ↑</span></a>
-    <a href="https://www.facebook.com/marketplace/denver/search?minPrice=3000&maxPrice=10000&sortBy=price_ascend&query=prius" target="_blank" rel="noopener">FB Marketplace — "prius"<span>$3k–$10k · price ↑</span></a>
-    <a href="https://www.facebook.com/marketplace/denver/search?minPrice=3000&maxPrice=10000&sortBy=price_ascend&query=nissan%20leaf" target="_blank" rel="noopener">FB Marketplace — "nissan leaf"<span>$3k–$10k · price ↑</span></a>
+    <a href="https://www.facebook.com/marketplace/denver/search?minPrice=3000&maxPrice=10000&sortBy=price_ascend&query=hybrid" target="_blank" rel="noopener">FB Marketplace — "hybrid"<span>$3k–$10k · price ↑</span></a>
+    <a href="https://cars.ksl.com/search/priceTo/10000/mileageTo/160000" target="_blank" rel="noopener">KSL Cars (UT)<span>≤$10k · only if stretching radius</span></a>
   </div>
 
   <h2>🏆 Ranked shortlist <span class="count" id="count"></span></h2>
@@ -159,9 +269,16 @@ footer { margin-top:34px; font-size:11px; color:var(--footer); }
       <option value="price,0">Price ↓</option>
       <option value="miles,1">Miles ↑</option>
       <option value="dist,1">Distance ↑</option>
+      <option value="_mo,1">Cheapest to run</option>
       <option value="_days,0">Longest listed</option>
     </select>
-    <button id="hiddenToggle" hidden></button>
+    <select id="viewSel" aria-label="View" title="Table or card view">
+      <option value="table">▤ Table</option>
+      <option value="cards">▦ Cards</option>
+    </select>
+    <span class="spacer"></span>
+    <button id="hiddenToggle" class="linkbtn" hidden></button>
+    <button id="syncBtn" class="linkbtn" title="Copy your stars/notes/stages as user-state.json to commit for cross-device sync">⬆ Sync state</button>
   </div>
 
   <div class="tablewrap">
@@ -171,21 +288,26 @@ footer { margin-top:34px; font-size:11px; color:var(--footer); }
         <th scope="col" tabindex="0" data-k="rank" data-t="n">#<span class="arrow"></span></th>
         <th scope="col" tabindex="0" data-k="veh">Vehicle<span class="arrow"></span></th>
         <th scope="col" tabindex="0" data-k="type">Fuel<span class="arrow"></span></th>
-        <th scope="col" tabindex="0" data-k="price" data-t="n">Price<span class="arrow"></span></th>
+        <th scope="col" tabindex="0" data-k="price" data-t="n">Price / deal<span class="arrow"></span></th>
         <th scope="col" tabindex="0" data-k="miles" data-t="n">Miles<span class="arrow"></span></th>
         <th scope="col" tabindex="0" data-k="mpg">MPG / range<span class="arrow"></span></th>
+        <th scope="col" tabindex="0" data-k="_mo" data-t="n">$/mo<span class="arrow"></span></th>
+        <th scope="col" tabindex="0" data-k="_win">Winter<span class="arrow"></span></th>
+        <th scope="col" tabindex="0" data-k="_safe" data-t="n">Safety<span class="arrow"></span></th>
         <th scope="col" tabindex="0" data-k="_days" data-t="n">Listed<span class="arrow"></span></th>
         <th scope="col" tabindex="0" data-k="dist" data-t="n">Dist<span class="arrow"></span></th>
         <th scope="col" tabindex="0" data-k="loc">Where<span class="arrow"></span></th>
         <th scope="col" tabindex="0" data-k="src">Source<span class="arrow"></span></th>
-        <th scope="col" tabindex="0" data-k="why">Why it's here<span class="arrow"></span></th>
+        <th scope="col" tabindex="0" data-k="why">Why / status<span class="arrow"></span></th>
         <th scope="col" aria-label="Actions"></th>
       </tr>
     </thead>
     <tbody></tbody>
   </table>
   </div>
-  <div class="legend">Distance = miles from Aurora 80015. Dealer prices are firm-ish; private/FB prices are negotiable (FB "$3,000" is often a placeholder — always message to confirm). <b class="new" style="margin-left:0">NEW</b> = first seen in the latest run. <b>▼/▲</b> under a price = change since the previous snapshot in <code>history/</code> (hover for the old price; the mini price line appears once a few days of history exist). <b class="gonetag" style="margin-left:0">GONE</b> = was in the previous snapshot but has left the feed — likely sold or delisted. "Listed" = days since this tracker first saw it (a long-sitting car is negotiating leverage). Click a column header to sort. Per-row: ☆ pins your candidates to the top, 📝 keeps a note, ✕ hides it — all saved on this device only.</div>
+  <div id="cards"></div>
+
+  <div class="legend">Distance = miles from Aurora 80015. <b class="new" style="margin-left:0">NEW</b> = first seen in the latest run · <b>▼/▲</b> under a price = change vs the previous <code>history/</code> snapshot (mini price line appears once a few days exist) · <b class="gonetag" style="margin-left:0">GONE</b> = left the feed, likely sold — its final price + days listed is negotiating intel. "Listed" = days since this tracker first saw it. <b>$/mo</b> = estimated energy to run <i>your</i> commit (~550 mi/mo) at $3.68/gal or ~$0.14/kWh home charging. <b>Winter</b> = does an EV cover the 25-mi commute at −10 °F (✓ comfortably, ⚠ tight, ✗ no); L1 adds ~40 mi overnight. <b>Safety</b> from NHTSA/IIHS — click a car's NHTSA/IIHS links to verify. Per-row: pick a <b>status</b> stage to pin & track, 📝 note, 🔍 PPI checklist, ⇄ compare, ✕ hide. Stars/notes/stages save on this device; ⬆ Sync exports them for cross-device.</div>
 
   <h2>💡 Buying tips for this budget</h2>
   <div class="tips"><ul>
@@ -193,12 +315,22 @@ footer { margin-top:34px; font-size:11px; color:var(--footer); }
     <li><b>Hybrids:</b> ask about traction-battery health and warning lights. Toyota hybrid batteries commonly last 200k+; Honda Civic Hybrid (IMA) batteries are the weak point.</li>
     <li><b>Used EVs (Leaf):</b> check battery "bars." A 2011–2013 Leaf may show only ~40–70 mi real range, and Colorado winters cut EV range ~30%. 2017+ Leaf is safer for year-round.</li>
     <li><b>Chevy Volt (plug-in):</b> ~35–53 mi electric covers most daily driving on your home outlet, then gas with no range anxiety.</li>
-    <li><b>Child safety:</b> confirm working LATCH anchors; check the model's IIHS rating.</li>
-    <li><b>Run a VIN title/history check</b> and avoid salvage/rebuilt titles.</li>
+    <li><b>Child safety:</b> confirm working LATCH anchors; check the model's IIHS rating (subcompacts like the Prius c score worse on small-overlap).</li>
+    <li><b>Run a VIN title/history check</b> and avoid salvage/rebuilt titles. Free open-recall lookup is linked on each car.</li>
   </ul></div>
 
-  <footer>Data in <code>listings.json</code> is refreshed by a scheduled task running in the Claude desktop app (which drives a logged-in Chrome, including Facebook Marketplace) and pushed here. Open this page from any device to see the latest.</footer>
+  <footer>Data in <code>listings.json</code> is refreshed daily by a scheduled task in the Claude desktop app (which drives a logged-in Chrome across Cars.com, CarGurus, Craigslist, Facebook, Carvana, eBay, OfferUp, Hertz/Enterprise & KSL, enriches recalls via NHTSA, and pushes here). Open this page from any device to see the latest. Safety, $/mo and winter-range figures are estimates for quick screening — verify before buying.</footer>
 </div>
+
+<div id="cmpbar">
+  <span id="cmpcount">0 selected</span>
+  <button class="go" id="cmpGo">Compare</button>
+  <button class="clr" id="cmpClr">clear</button>
+</div>
+<div id="modal"><div class="mbox">
+  <div class="mhead"><h3>Side-by-side compare</h3><button class="x" id="mClose" aria-label="Close">✕</button></div>
+  <div id="cmpBody"></div>
+</div></div>
 
 <script>
 const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -206,24 +338,105 @@ const safeUrl = u => (typeof u === 'string' && /^https?:\/\//i.test(u)) ? u : nu
 const tagClass = t => t === 'EV' ? 't-ev' : t === 'PHEV' ? 't-phev' : 't-hyb';
 const rowKey = r => r.url || r.veh;
 
+/* ---------- theme toggle ---------- */
+const themeBtn = document.getElementById('themeBtn');
+const themeSeq = ['auto','light','dark'];
+const themeLabel = {auto:'🌗 Auto', light:'☀️ Light', dark:'🌙 Dark'};
+let theme = (()=>{ try { return localStorage.getItem('dcs-theme') || 'auto'; } catch(e){ return 'auto'; } })();
+function applyTheme(){
+  if (theme === 'auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', theme);
+  themeBtn.textContent = themeLabel[theme];
+}
+themeBtn.addEventListener('click', ()=>{ theme = themeSeq[(themeSeq.indexOf(theme)+1)%3]; try{localStorage.setItem('dcs-theme',theme);}catch(e){} applyTheme(); });
+applyTheme();
+
+/* ---------- static reference data ---------- */
+// Commute economics: ~25 mi round trip x ~22 workdays ~= 550 mi/mo.
+const COMMUTE = { milesMo: 550, roundTrip: 25, gas: 3.68, elec: 0.14, evMiKwh: 3.3, phevMiKwh: 3.0 };
+function monthlyCost(r){
+  if (r.type === 'HYB') { const mpg = parseFloat(String(r.mpg||'').replace(/[^0-9.]/g,'')); if (!mpg) return null; return (COMMUTE.milesMo/mpg)*COMMUTE.gas; }
+  if (r.type === 'EV')  return (COMMUTE.milesMo/COMMUTE.evMiKwh)*COMMUTE.elec;
+  if (r.type === 'PHEV') return (COMMUTE.milesMo/COMMUTE.phevMiKwh)*COMMUTE.elec;
+  return null;
+}
+// Winter range pass/fail for EVs (does it cover the 25-mi commute at -10F?)
+function winterInfo(r){
+  if (r.type !== 'EV') return null;
+  const m = /(\d{2,3})\s*mi\s*range/i.exec(String(r.mpg||''));
+  if (!m) return { status:'unk', txt:'?' };
+  const nom = +m[1], cold = Math.round(nom*0.7);
+  const status = cold >= 38 ? 'pass' : cold >= COMMUTE.roundTrip ? 'marg' : 'fail';
+  return { status, cold, nom, txt: (status==='pass'?'✓':status==='marg'?'⚠':'✗') };
+}
+// Safety lookup (NHTSA overall stars + IIHS summary), verified via NHTSA/IIHS Jul 2026.
+function safetyFor(veh){
+  const s = String(veh||''); const yr = parseInt((s.match(/\b(19|20)\d{2}\b/)||[])[0], 10) || 0; const m = s.toLowerCase();
+  if (/prius c/.test(m)) return { n:4, i:'Acceptable*', note:'Subcompact; weak IIHS small-overlap. Tight for a car seat.' };
+  if (/prius/.test(m)) return { n:5, i:'Top Safety Pick', note:'5★ NHTSA; IIHS TSP (2010–14).' };
+  if (/camry/.test(m)) return { n:5, i:'Top Safety Pick', note:'5★ NHTSA; IIHS TSP 2012–14.' };
+  if (/fusion/.test(m)) return { n:4, i:'Top Safety Pick', note:'4★ NHTSA overall; IIHS TSP.' };
+  if (/volt/.test(m)) return { n:5, i:'Top Safety Pick', note:'5★ NHTSA; IIHS TSP; pack safe in crash tests.' };
+  if (/sonata/.test(m)) return { n:5, i:'Top Safety Pick', note:'5★ NHTSA; IIHS TSP.' };
+  if (/leaf/.test(m)) return yr >= 2018 ? { n:5, i:'Good', note:'5★ NHTSA (gen-2); IIHS mostly Good.' } : { n:4, i:'Good', note:'~4★ NHTSA (gen-1 2011–17); IIHS Good on older tests.' };
+  if (/escape/.test(m)) return { n:4, i:'Acceptable', note:'2007 = old NHTSA scale (not comparable to 2011+).' };
+  if (/civic/.test(m)) return { n:5, i:'Top Safety Pick', note:'5★ NHTSA; IIHS TSP (gen-dependent).' };
+  return null;
+}
+function starStr(n){ return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5-n); }
+// PPI / test-drive checklist, fuel-type specific
+function ppiItems(type){
+  const common = ['Independent pre-purchase inspection booked','VIN title/history clean (no salvage/rebuilt)','Tires & brakes have life left','No dashboard warning lights','Test drive: brakes, alignment, no shudder','LATCH child-seat anchors present & working','A/C and heat both work'];
+  const hyb = ['Hybrid battery: no warning, healthy state','Regen braking feels smooth'];
+  const phev = ['Charges on a normal 120V outlet','Electric range close to spec on a full charge','No hybrid/charger fault codes'];
+  const ev = ['Battery State-of-Health / bars (ask for LeafSpy read)','Range at 100% charge vs spec','Charges on Level 1 (120V) overnight','Charge port & cable included and working'];
+  return common.concat(type==='EV'?ev:type==='PHEV'?phev:hyb);
+}
+
+/* ---------- per-car user state (stars/notes/stages/ppi), device + cross-device ---------- */
+const STAGES = ['', 'shortlisted','messaged','test drive','inspected','offer'];
+let US = { cars: {} };
+function loadUS(){
+  try { const v = JSON.parse(localStorage.getItem('dcs-state-v2')||'null'); if (v && v.cars) US = v; } catch(e){}
+  // migrate legacy keys once
+  if (!Object.keys(US.cars).length) {
+    try {
+      const oldStar = new Set(JSON.parse(localStorage.getItem('dcs-starred')||'[]'));
+      const oldHid = new Set(JSON.parse(localStorage.getItem('dcs-hidden')||'[]'));
+      const oldNotes = JSON.parse(localStorage.getItem('dcs-notes')||'{}')||{};
+      oldStar.forEach(k=>carState(k).stage='shortlisted');
+      oldHid.forEach(k=>carState(k).hidden=true);
+      Object.entries(oldNotes).forEach(([k,v])=>carState(k).note=v);
+    } catch(e){}
+  }
+}
+function carState(k){ return US.cars[k] || (US.cars[k] = {}); }
+function saveUS(){ try { US.updated = new Date().toISOString(); localStorage.setItem('dcs-state-v2', JSON.stringify(US)); } catch(e){} }
+function mergeRemoteState(remote){
+  if (!remote || !remote.cars) return;
+  Object.entries(remote.cars).forEach(([k, rc]) => {
+    const lc = carState(k);
+    // local edits win where present; otherwise adopt the committed (cross-device) value
+    if (lc.stage == null && rc.stage) lc.stage = rc.stage;
+    if (!lc.note && rc.note) lc.note = rc.note;
+    if (lc.hidden == null && rc.hidden != null) lc.hidden = rc.hidden;
+    if (rc.ppi) { lc.ppi = Object.assign({}, rc.ppi, lc.ppi || {}); }
+  });
+}
+loadUS();
+
 let rows = [];
 let latestRun = null;
-let prevPrices = null; // {date: 'YYYY-MM-DD', prices: {rowKey: price}} from newest history snapshot
-let priceHistory = {}; // rowKey -> [{d: 'YYYY-MM-DD', p: price}] ascending across snapshots + current
-const state = { fuel: 'ALL', q: '', sortKey: null, sortAsc: true, sortNum: false, showHidden: false };
-
-const loadSet = k => { try { return new Set(JSON.parse(localStorage.getItem(k) || '[]')); } catch (e) { return new Set(); } };
-const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
-const hidden = loadSet('dcs-hidden');
-const starred = loadSet('dcs-starred');
-let notes = {};
-try { notes = JSON.parse(localStorage.getItem('dcs-notes') || '{}') || {}; } catch (e) {}
-const saveHidden = () => save('dcs-hidden', [...hidden]);
-const saveStarred = () => save('dcs-starred', [...starred]);
-const saveNotes = () => save('dcs-notes', notes);
+let prevPrices = null;
+let priceHistory = {};
+const compare = new Set();
+const state = { fuel: 'ALL', q: '', sortKey: null, sortAsc: true, sortNum: false, showHidden: false, view: 'table' };
+try { const v = localStorage.getItem('dcs-view'); if (v) state.view = v; } catch(e){}
 
 const tbody = document.querySelector('#grid tbody');
+const cardsEl = document.getElementById('cards');
 
+/* ---------- price delta / sparkline ---------- */
 function deltaHtml(r) {
   if (!prevPrices || r._gone) return '';
   const was = prevPrices.prices[rowKey(r)];
@@ -231,256 +444,375 @@ function deltaHtml(r) {
   const d = r.price - was;
   return `<span class="delta ${d < 0 ? 'drop' : 'rise'}" title="was $${was.toLocaleString()} on ${esc(prevPrices.date)}">${d < 0 ? '▼' : '▲'} $${Math.abs(d).toLocaleString()}</span>`;
 }
-
 function sparkHtml(r) {
   const s = priceHistory[rowKey(r)];
   if (r._gone || !s || s.length < 2) return '';
-  const ps = s.map(x => x.p);
-  const min = Math.min(...ps), max = Math.max(...ps);
+  const ps = s.map(x => x.p); const min = Math.min(...ps), max = Math.max(...ps);
   if (min === max) return '';
   const w = 56, h = 14, pad = 2;
-  const pts = s.map((x, i) =>
-    (pad + i * (w - 2 * pad) / (s.length - 1)).toFixed(1) + ',' +
-    (h - pad - (x.p - min) * (h - 2 * pad) / (max - min)).toFixed(1)).join(' ');
-  const trend = ps[ps.length - 1] <= ps[0] ? 'drop' : 'rise';
+  const pts = s.map((x, i) => (pad + i*(w-2*pad)/(s.length-1)).toFixed(1) + ',' + (h-pad-(x.p-min)*(h-2*pad)/(max-min)).toFixed(1)).join(' ');
+  const trend = ps[ps.length-1] <= ps[0] ? 'drop' : 'rise';
   const title = s.map(x => x.d.slice(5).replace('-', '/') + ' $' + x.p.toLocaleString()).join(' · ');
   return `<svg class="spark ${trend}" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img"><title>${esc(title)}</title><polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>`;
 }
 
+/* ---------- small cell builders ---------- */
+function dealBadge(r){
+  if (!r.dealRating) return '';
+  const d = String(r.dealRating).toLowerCase();
+  const cls = /great/.test(d)?'deal-great':/good/.test(d)?'deal-good':/(over|high|bad)/.test(d)?'deal-bad':'deal-fair';
+  return `<span class="deal ${cls}">${esc(r.dealRating)}</span>`;
+}
+function imvBadge(r){
+  if (typeof r.imvDelta !== 'number' || r.imvDelta === 0) return '';
+  const under = r.imvDelta < 0;
+  return `<span class="imv ${under?'under':'over'}">${under?'$'+Math.abs(r.imvDelta).toLocaleString()+' under mkt':'$'+r.imvDelta.toLocaleString()+' over mkt'}</span>`;
+}
 function safetyLinks(r) {
   const m = /^(\d{4})\s+(\S+)\s+(.+)$/.exec(r.veh || '');
   if (!m) return '';
   const [, yr, make, model] = m;
   const nhtsa = `https://www.nhtsa.gov/vehicle/${yr}/${encodeURIComponent(make.toUpperCase())}/${encodeURIComponent(model.split(/\s+/)[0].toUpperCase())}`;
-  const iihs = `https://www.google.com/search?q=${encodeURIComponent(`IIHS safety rating ${yr} ${make} ${model}`)}`;
-  return `<div class="safelinks"><a href="${esc(nhtsa)}" target="_blank" rel="noopener">NHTSA recalls</a> · <a href="${esc(iihs)}" target="_blank" rel="noopener">IIHS rating</a></div>`;
+  const iihs = `https://www.google.com/search?q=${encodeURIComponent('IIHS safety rating '+yr+' '+make+' '+model)}`;
+  return `<a href="${esc(nhtsa)}" target="_blank" rel="noopener">NHTSA</a> · <a href="${esc(iihs)}" target="_blank" rel="noopener">IIHS</a>`;
+}
+function recallHtml(r){
+  if (r.recalls == null) return '';
+  const m = /^(\d{4})\s+(\S+)\s+(\S+)/.exec(r.veh||'');
+  const url = r.vin ? 'https://www.nhtsa.gov/recalls?vin='+encodeURIComponent(r.vin)
+            : m ? `https://www.nhtsa.gov/vehicle/${m[1]}/${encodeURIComponent(m[2].toUpperCase())}/${encodeURIComponent(m[3].toUpperCase())}` : null;
+  const label = r.recalls === 0 ? '✓ 0 recalls' : '⚠ '+r.recalls+' recall'+(r.recalls>1?'s':'');
+  const cls = r.recalls === 0 ? 'ok' : 'warn';
+  const inner = url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${label}</a>` : label;
+  return `<span class="recall flag ${cls}">${inner}</span>`;
+}
+function historyFlags(r){
+  const out = [];
+  if (r.accident) { const bad=/[1-9]/.test(String(r.accident)); out.push(`<span class="flag ${bad?'warn':'ok'}">${bad?'⚠':'✓'} ${esc(r.accident)}</span>`); }
+  if (r.title && !/^clean$/i.test(r.title)) out.push(`<span class="flag bad">⚑ ${esc(r.title)} title</span>`);
+  return out.join(' · ');
+}
+function moCell(r){ const v = monthlyCost(r); return v == null ? '<span class="note">—</span>' : `<span class="mo" title="~550 mi/mo commute @ $${COMMUTE.gas}/gal or $${COMMUTE.elec}/kWh">$${Math.round(v)}</span>`; }
+function winCell(r){ const w = winterInfo(r); if (!w) return '<span class="note" title="Gas/hybrid — no range limit">—</span>'; const t = w.status==='unk'?'range unknown — verify battery health':`≈${w.cold} mi at −10°F vs ${COMMUTE.roundTrip} mi commute; L1 adds ~40 mi overnight`; return `<span class="win ${w.status}" title="${esc(t)}">${w.txt}</span>`; }
+function safeCell(r){ const s = safetyFor(r.veh); if (!s) return '<span class="note">—</span>'; return `<span class="safe" title="${esc(s.note)}"><span class="stars">${starStr(s.n)}</span><br><span class="note">IIHS ${esc(s.i)}</span></span>`; }
+function safeSortVal(r){ const s = safetyFor(r.veh); return s ? s.n : 0; }
+function thumbHtml(r, cls){ const u = safeUrl(r.photo); return u ? `<img class="${cls}" src="${esc(u)}" alt="" loading="lazy" onerror="this.classList.add('ph');this.removeAttribute('src');this.textContent='🚗';">` : `<div class="${cls} ph">🚗</div>`; }
+
+function stageSelect(r, key){
+  const cur = carState(key).stage || '';
+  const opts = STAGES.map(s => `<option value="${s}"${s===cur?' selected':''}>${s===''?'— status —':s}</option>`).join('');
+  return `<select class="stagesel" data-stage="${esc(cur)}" aria-label="Status for ${esc(r.veh)}">${opts}</select>`;
+}
+function stageChip(key){ const s = carState(key).stage; return s ? `<span class="stage-chip s-${esc(s.replace(/\s+/g,'-'))}">${esc(s)}</span>` : ''; }
+function ppiHtml(r, key){
+  const cs = carState(key); const done = cs.ppi || {};
+  const items = ppiItems(r.type).map((t,i)=>{ const on = !!done[i]; return `<label><input type="checkbox" data-ppi="${i}"${on?' checked':''}><span class="${on?'done':''}">${esc(t)}</span></label>`; }).join('');
+  const n = Object.values(done).filter(Boolean).length, tot = ppiItems(r.type).length;
+  return `<div class="expand"><button class="exp-toggle" data-exp>🔍 PPI / test-drive checklist${n?` (${n}/${tot})`:''}</button><div class="ppi"><h4>${esc(r.type)} inspection checklist</h4>${items}</div></div>`;
 }
 
-// Fetch every dated snapshot from the 14 days before the current run (missing
-// days 404 and are skipped). Powers price deltas, sparklines, and gone rows.
-async function loadHistory() {
-  if (!latestRun) return;
-  const base = new Date(latestRun + 'T12:00:00');
-  if (isNaN(base)) return;
-  const dates = [];
-  for (let i = 1; i <= 14; i++) {
-    const d = new Date(base);
-    d.setDate(base.getDate() - i);
-    dates.push(d.toISOString().slice(0, 10));
-  }
-  const results = await Promise.allSettled(dates.map(iso =>
-    fetch('history/' + iso + '.json?_=' + Date.now())
-      .then(resp => resp.ok ? resp.json() : Promise.reject())
-      .then(j => ({ date: iso, listings: j.listings || [] }))
-  ));
-  const snaps = results.filter(r => r.status === 'fulfilled').map(r => r.value)
-    .sort((a, b) => a.date < b.date ? -1 : 1); // oldest first
-  if (!snaps.length) return;
-
-  priceHistory = {};
-  snaps.forEach(s => s.listings.forEach(x => {
-    const k = x.url || x.veh;
-    if (!k || typeof x.price !== 'number') return;
-    (priceHistory[k] = priceHistory[k] || []).push({ d: s.date, p: x.price });
-  }));
-
-  const newest = snaps[snaps.length - 1];
-  const prices = {};
-  newest.listings.forEach(x => { const k = x.url || x.veh; if (k && typeof x.price === 'number') prices[k] = x.price; });
-  prevPrices = { date: newest.date, prices };
-
-  // current prices complete each series; live keys also mark what's NOT gone
-  const liveKeys = new Set(rows.filter(r => !r._gone).map(rowKey));
-  rows.filter(r => !r._gone).forEach(r => {
-    if (typeof r.price === 'number') (priceHistory[rowKey(r)] = priceHistory[rowKey(r)] || []).push({ d: latestRun, p: r.price });
-  });
-
-  // gone = in the newest snapshot but no longer in the current feed
-  rows = rows.filter(r => !r._gone);
-  newest.listings.forEach(x => {
-    const k = x.url || x.veh;
-    if (k && !liveKeys.has(k)) rows.push({ ...x, _gone: true });
-  });
-
-  applyView();
-}
-
-function rowHtml(r, isHidden) {
+/* ---------- table row ---------- */
+function rowHtml(r) {
+  const key = rowKey(r);
+  const cs = carState(key);
+  const isHidden = !!cs.hidden;
+  const pinned = !!cs.stage;
   const isNew = !r._gone && latestRun && r.firstSeen === latestRun;
   const url = safeUrl(r.url);
-  const key = rowKey(r);
-  const isStar = starred.has(key);
-  const note = notes[key];
   const veh = url ? `<a class="veh-link" href="${esc(url)}" target="_blank" rel="noopener">${esc(r.veh)} ↗</a>` : `<b>${esc(r.veh)}</b>`;
-  return `<tr class="${isHidden ? 'is-hidden' : ''}${r._gone ? ' gone' : ''}${isStar ? ' starred' : ''}" data-key="${esc(key)}">
+  const hflags = historyFlags(r);
+  return `<tr class="${isHidden?'is-hidden':''}${r._gone?' gone':''}${pinned?' pinned':''}" data-key="${esc(key)}">
     <td class="rank">${r._gone ? '–' : esc(r.rank)}</td>
-    <td class="c-veh">${veh}${isNew ? '<span class="new">NEW</span>' : ''}${r._gone ? '<span class="gonetag" title="Was in the previous snapshot but no longer in the feed — likely sold or delisted">GONE</span>' : ''}${safetyLinks(r)}</td>
+    <td>
+      <div class="veh-cell">${thumbHtml(r,'thumb')}<div>${veh}${isNew?'<span class="new">NEW</span>':''}${stageChip(key)}${r._gone?'<span class="gonetag" title="Was in the previous snapshot but no longer in the feed — likely sold or delisted">GONE</span>':''}
+        <div class="sub2">${safetyLinks(r)}${r.recalls!=null?' · '+recallHtml(r):''}${r.vin?` · VIN …${esc(String(r.vin).slice(-6))}`:''}</div>
+        ${hflags?`<div class="sub2">${hflags}</div>`:''}
+      </div></div>
+    </td>
     <td><span class="tag ${tagClass(r.type)}">${esc(r.type)}</span></td>
-    <td class="price">$${Number(r.price).toLocaleString()}${deltaHtml(r)}${sparkHtml(r)}</td>
-    <td data-l="miles">${r.miles != null ? Number(r.miles).toLocaleString() : '<span class="badge">ask</span>'}</td>
-    <td data-l="mpg/range">${esc(r.mpg)}</td>
-    <td data-l="listed">${r._days != null ? (r._days === 0 ? 'today' : r._days + ' d') : ''}</td>
-    <td data-l="away">${r.dist != null ? esc(r.dist) + ' mi' : ''}</td>
-    <td data-l="in">${esc(r.loc)}</td>
-    <td data-l="via">${esc(r.src)}</td>
-    <td class="note c-why">${esc(r.why)}${note ? `<div class="unote">📝 ${esc(note)}</div>` : ''}</td>
+    <td class="price">$${Number(r.price).toLocaleString()}${deltaHtml(r)}${dealBadge(r)?'<br>'+dealBadge(r):''}${imvBadge(r)}${sparkHtml(r)}</td>
+    <td data-l="miles">${r.miles!=null?Number(r.miles).toLocaleString():'<span class="badge">ask</span>'}</td>
+    <td>${esc(r.mpg)}</td>
+    <td>${moCell(r)}</td>
+    <td>${winCell(r)}</td>
+    <td>${safeCell(r)}</td>
+    <td>${r._days!=null?(r._days===0?'today':r._days+' d'):''}${typeof r.daysListed==='number'?`<div class="note" title="Seller's days on market">src ${r.daysListed} d</div>`:''}</td>
+    <td>${r.dist!=null?esc(r.dist)+' mi':''}</td>
+    <td>${esc(r.loc)}</td>
+    <td>${esc(r.src)}</td>
+    <td class="note">${esc(r.why)}${cs.note?`<div class="unote">📝 ${esc(cs.note)}</div>`:''}${ppiHtml(r,key)}</td>
     <td class="c-act">
-      <button class="actbtn starbtn ${isStar ? 'on' : ''}" title="${isStar ? 'Unstar' : 'Star: pin to top'}" aria-label="${isStar ? 'Unstar' : 'Star'} ${esc(r.veh)}">${isStar ? '★' : '☆'}</button>
-      <button class="actbtn notebtn" title="Add/edit note" aria-label="Note for ${esc(r.veh)}">📝</button>
-      <button class="actbtn hidebtn" title="${isHidden ? 'Unhide this listing' : 'Hide this listing'}" aria-label="${isHidden ? 'Unhide' : 'Hide'} ${esc(r.veh)}">${isHidden ? '↩' : '✕'}</button>
+      ${stageSelect(r,key)}<br>
+      <button class="actbtn notebtn" title="Add/edit note" aria-label="Note">📝</button>
+      <button class="actbtn cmpbtn ${compare.has(key)?'on':''}" title="Add to compare" aria-label="Compare">⇄</button>
+      <button class="actbtn hidebtn" title="${isHidden?'Unhide':'Hide'}" aria-label="${isHidden?'Unhide':'Hide'}">${isHidden?'↩':'✕'}</button>
     </td>
   </tr>`;
 }
 
+/* ---------- card ---------- */
+function cardHtml(r){
+  const key = rowKey(r);
+  const cs = carState(key);
+  const isHidden = !!cs.hidden;
+  const pinned = !!cs.stage;
+  const isNew = !r._gone && latestRun && r.firstSeen === latestRun;
+  const url = safeUrl(r.url);
+  const title = url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(r.veh)} ↗</a>` : esc(r.veh);
+  const hflags = historyFlags(r);
+  const w = winterInfo(r);
+  return `<div class="card ${pinned?'pinned':''}${r._gone?' gone':''}" data-key="${esc(key)}">
+    <div class="ph-wrap">${thumbHtml(r,'')||''}${safeUrl(r.photo)?`<img src="${esc(r.photo)}" alt="" loading="lazy" onerror="this.parentNode.innerHTML='<div class=\\'noimg\\'>🚗</div>'">`:'<div class="noimg">🚗</div>'}
+      <div class="ph-badges"><span class="rank-b">${r._gone?'GONE':'#'+esc(r.rank)}</span><span>${isNew?'<span class="new" style="margin:0">NEW</span>':''} ${dealBadge(r)}</span></div>
+    </div>
+    <div class="body">
+      <div class="title">${title} ${stageChip(key)}</div>
+      <div class="pricerow"><span class="price">$${Number(r.price).toLocaleString()}</span><span class="tag ${tagClass(r.type)}">${esc(r.type)}</span>${imvBadge(r)}${deltaHtml(r)}</div>
+      <div class="specs"><span>${r.miles!=null?Number(r.miles).toLocaleString()+' mi':'miles: ask'}</span><span>${esc(r.mpg)}</span>${monthlyCost(r)!=null?`<span>~$${Math.round(monthlyCost(r))}/mo</span>`:''}<span>${r.dist!=null?esc(r.dist)+' mi · ':''}${esc(r.loc)}</span></div>
+      <div class="specs"><span class="safe" title="${esc((safetyFor(r.veh)||{}).note||'')}"><span class="stars">${starStr((safetyFor(r.veh)||{n:0}).n)}</span> ${safetyFor(r.veh)?'IIHS '+esc(safetyFor(r.veh).i):''}</span>${w?`<span class="win ${w.status}" title="winter range">Winter ${w.txt}</span>`:''}${r.recalls!=null?recallHtml(r):''}</div>
+      ${hflags?`<div class="specs">${hflags}</div>`:''}
+      <div class="why">${esc(r.why)}${cs.note?`<div class="unote">📝 ${esc(cs.note)}</div>`:''}</div>
+      ${ppiHtml(r,key)}
+      <div class="cardfoot">${stageSelect(r,key)}
+        <button class="actbtn notebtn" title="Note" aria-label="Note">📝</button>
+        <button class="actbtn cmpbtn ${compare.has(key)?'on':''}" title="Compare" aria-label="Compare">⇄</button>
+        <button class="actbtn hidebtn" title="${isHidden?'Unhide':'Hide'}">${isHidden?'↩':'✕'}</button>
+        <span class="note" style="margin-left:auto">${esc(r.src)}${r._days!=null?' · '+(r._days===0?'today':r._days+'d'):''}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------- dashboard ---------- */
+function tile(lab, val, det, key){ return `<button class="tile ${key?'':'plain'}" ${key?`data-goto="${esc(key)}"`:''}><div class="lab">${lab}</div><div class="val">${val}</div><div class="det">${det||''}</div></button>`; }
+function buildDash(){
+  const live = rows.filter(r=>!r._gone);
+  const dash = document.getElementById('dash');
+  if (!live.length){ dash.innerHTML = ''; return; }
+  const byPrice = [...live].sort((a,b)=>a.price-b.price);
+  const cheapest = byPrice[0];
+  const closest = [...live].filter(r=>r.dist!=null).sort((a,b)=>a.dist-b.dist)[0];
+  const newest = [...live].filter(r=>r.firstSeen).sort((a,b)=>a.firstSeen<b.firstSeen?1:-1)[0];
+  // best deal: most below IMV, else a "Great Deal", else cheapest
+  const withImv = live.filter(r=>typeof r.imvDelta==='number').sort((a,b)=>a.imvDelta-b.imvDelta);
+  const great = live.find(r=>/great/i.test(r.dealRating||''));
+  const best = (withImv[0] && withImv[0].imvDelta<0) ? withImv[0] : great || cheapest;
+  const prices = byPrice.map(r=>r.price);
+  const median = prices.length%2 ? prices[(prices.length-1)/2] : Math.round((prices[prices.length/2-1]+prices[prices.length/2])/2);
+  const newCount = live.filter(r=>latestRun && r.firstSeen===latestRun).length;
+  const goneCount = rows.filter(r=>r._gone).length;
+  const firstSeens = live.map(r=>r.firstSeen).filter(Boolean).sort();
+  let daysSearch = '';
+  if (firstSeens.length && latestRun){ const d = Math.round((Date.parse(latestRun)-Date.parse(firstSeens[0]))/86400000); daysSearch = (d>=0?d:0)+' days'; }
+  const bestDet = best ? (typeof best.imvDelta==='number' && best.imvDelta<0 ? '$'+Math.abs(best.imvDelta).toLocaleString()+' under mkt' : best.dealRating || '') : '';
+  dash.innerHTML = [
+    tile('Cheapest', '$'+cheapest.price.toLocaleString(), esc(cheapest.veh), rowKey(cheapest)),
+    tile('Closest', (closest?closest.dist+' mi':'—'), closest?esc(closest.veh):'', closest?rowKey(closest):''),
+    tile('Best deal', best?esc(best.veh.replace(/^\d{4}\s/,'')):'—', bestDet, best?rowKey(best):''),
+    tile('Newest find', newest?esc(newest.veh.replace(/^\d{4}\s/,'')):'—', newest?('added '+(newest.firstSeen===latestRun?'today':newest.firstSeen)):'', newest?rowKey(newest):''),
+    tile('Median price', '$'+median.toLocaleString(), live.length+' cars live'),
+    tile('New today', String(newCount), newCount?'since last run':'no new cars'),
+    tile('Gone / sold', String(goneCount), goneCount?'left the feed':'none'),
+    tile('Tracking', daysSearch||'—', 'since first listing')
+  ].join('');
+}
+
+/* ---------- view rendering ---------- */
 function applyView() {
   let list = rows;
   if (state.fuel !== 'ALL') list = list.filter(r => r.type === state.fuel);
-  if (state.q) {
-    const q = state.q.toLowerCase();
-    list = list.filter(r => [r.veh, r.loc, r.src, r.why, r.mpg, notes[rowKey(r)]].filter(Boolean).join(' ').toLowerCase().includes(q));
-  }
-  const hiddenCount = list.filter(r => hidden.has(rowKey(r))).length;
-  if (!state.showHidden) list = list.filter(r => !hidden.has(rowKey(r)));
+  if (state.q) { const q = state.q.toLowerCase(); list = list.filter(r => [r.veh, r.loc, r.src, r.why, r.mpg, r.dealRating, carState(rowKey(r)).note].filter(Boolean).join(' ').toLowerCase().includes(q)); }
+  const hiddenCount = list.filter(r => carState(rowKey(r)).hidden).length;
+  if (!state.showHidden) list = list.filter(r => !carState(rowKey(r)).hidden);
 
   const { sortKey: k, sortAsc: a, sortNum: n } = state;
+  const val = (r) => k === '_mo' ? (monthlyCost(r) ?? 1e9) : k === '_safe' ? safeSortVal(r) : k === '_win' ? ({pass:0,marg:1,unk:2,fail:3}[(winterInfo(r)||{status:'z'}).status] ?? 4) : r[k];
   list = [...list].sort((x, y) => {
-    const sx = starred.has(rowKey(x)) ? 0 : 1, sy = starred.has(rowKey(y)) ? 0 : 1;
-    if (sx !== sy) return sx - sy;          // starred pin to top
+    const sx = carState(rowKey(x)).stage ? 0 : 1, sy = carState(rowKey(y)).stage ? 0 : 1;
+    if (sx !== sy) return sx - sy;
     const gx = x._gone ? 1 : 0, gy = y._gone ? 1 : 0;
-    if (gx !== gy) return gx - gy;          // gone sink to bottom
+    if (gx !== gy) return gx - gy;
     if (!k) return (x.rank ?? 999) - (y.rank ?? 999);
-    let u = x[k], v = y[k];
+    let u = val(x), v = val(y);
     if (u == null) return 1;
     if (v == null) return -1;
-    if (n) return a ? u - v : v - u;
+    if (n || k==='_win') return a ? u - v : v - u;
     return a ? String(u).localeCompare(String(v)) : String(v).localeCompare(String(u));
   });
 
-  tbody.innerHTML = list.length
-    ? list.map(r => rowHtml(r, hidden.has(rowKey(r)))).join('')
-    : '<tr><td colspan="12" class="note" style="padding:16px">No listings match — clear the filters above.</td></tr>';
+  tbody.innerHTML = list.length ? list.map(rowHtml).join('') : '<tr><td colspan="15" class="note" style="padding:16px">No listings match — clear the filters above.</td></tr>';
+  cardsEl.innerHTML = list.length ? list.map(cardHtml).join('') : '<div class="note" style="padding:16px">No listings match — clear the filters above.</div>';
+  cardsEl.classList.toggle('on', state.view === 'cards');
+  document.querySelector('.tablewrap').style.display = state.view === 'cards' ? 'none' : '';
 
   const live = rows.filter(r => !r._gone).length;
   const shownLive = list.filter(r => !r._gone).length;
   const shownGone = list.length - shownLive;
-  document.getElementById('count').textContent = live ? `(${shownLive} of ${live}${shownGone ? ` · ${shownGone} gone` : ''})` : '';
+  document.getElementById('count').textContent = live ? `(${shownLive} of ${live}${shownGone?` · ${shownGone} gone`:''})` : '';
 
   const t = document.getElementById('hiddenToggle');
-  if (hiddenCount) {
-    t.hidden = false;
-    t.textContent = state.showHidden ? 'Hide the hidden listings' : `Show ${hiddenCount} hidden`;
-  } else {
-    t.hidden = true;
-    state.showHidden = false;
-  }
+  if (hiddenCount) { t.hidden = false; t.textContent = state.showHidden ? 'Hide hidden' : `Show ${hiddenCount} hidden`; }
+  else { t.hidden = true; state.showHidden = false; }
 
   document.querySelectorAll('#grid th[data-k]').forEach(th => {
     const active = th.dataset.k === state.sortKey;
     th.setAttribute('aria-sort', active ? (state.sortAsc ? 'ascending' : 'descending') : 'none');
     th.querySelector('.arrow').textContent = active ? (state.sortAsc ? ' ▲' : ' ▼') : '';
   });
+  updateCmpBar();
 }
 
 function setSort(k, num, asc) {
   state.sortAsc = asc != null ? asc : (state.sortKey === k ? !state.sortAsc : true);
-  state.sortKey = k;
-  state.sortNum = num;
-  applyView();
+  state.sortKey = k; state.sortNum = num; applyView();
 }
 
+/* ---------- events ---------- */
 document.querySelectorAll('#grid th[data-k]').forEach(th => {
   const go = () => setSort(th.dataset.k, th.dataset.t === 'n');
   th.addEventListener('click', go);
   th.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
 });
-
-document.getElementById('sortSel').addEventListener('change', e => {
-  const [k, asc] = e.target.value.split(',');
-  setSort(k, k !== 'veh', asc === '1');
-});
-
-document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
-  state.fuel = c.dataset.fuel;
-  document.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', String(x === c)));
-  applyView();
-}));
-
+document.getElementById('sortSel').addEventListener('change', e => { const [k, asc] = e.target.value.split(','); setSort(k, k !== 'veh', asc === '1'); });
+document.getElementById('viewSel').value = state.view;
+document.getElementById('viewSel').addEventListener('change', e => { state.view = e.target.value; try{localStorage.setItem('dcs-view',state.view);}catch(x){} applyView(); });
+document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => { state.fuel = c.dataset.fuel; document.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', String(x === c))); applyView(); }));
 document.getElementById('q').addEventListener('input', e => { state.q = e.target.value.trim(); applyView(); });
-
 document.getElementById('hiddenToggle').addEventListener('click', () => { state.showHidden = !state.showHidden; applyView(); });
 
-function openNoteEditor(tr, key) {
-  const td = tr.querySelector('.c-why');
-  let ta = td.querySelector('.noteedit');
-  if (ta) { ta.focus(); return; }
-  const disp = td.querySelector('.unote');
-  if (disp) disp.remove();
-  ta = document.createElement('textarea');
-  ta.className = 'noteedit';
-  ta.placeholder = 'Your note — saved on this device when you click away';
-  ta.value = notes[key] || '';
-  td.appendChild(ta);
-  ta.focus();
-  ta.addEventListener('blur', () => {
-    const v = ta.value.trim();
-    if (v) notes[key] = v; else delete notes[key];
-    saveNotes();
-    applyView();
-  });
+function openNoteEditor(container, key) {
+  const target = container.querySelector('.why') || container.querySelector('.c-why') || container.querySelector('td.note') || container;
+  let ta = target.querySelector('.noteedit'); if (ta) { ta.focus(); return; }
+  const disp = target.querySelector('.unote'); if (disp) disp.remove();
+  ta = document.createElement('textarea'); ta.className = 'noteedit'; ta.placeholder = 'Your note — saved on this device'; ta.value = carState(key).note || '';
+  target.appendChild(ta); ta.focus();
+  ta.addEventListener('blur', () => { const v = ta.value.trim(); if (v) carState(key).note = v; else delete carState(key).note; saveUS(); applyView(); });
 }
 
-tbody.addEventListener('click', e => {
-  const btn = e.target.closest('.actbtn');
-  if (!btn) return;
-  const tr = btn.closest('tr');
-  const key = tr.dataset.key;
-  if (btn.classList.contains('hidebtn')) {
-    hidden.has(key) ? hidden.delete(key) : hidden.add(key);
-    saveHidden();
-  } else if (btn.classList.contains('starbtn')) {
-    starred.has(key) ? starred.delete(key) : starred.add(key);
-    saveStarred();
-  } else if (btn.classList.contains('notebtn')) {
-    openNoteEditor(tr, key);
-    return; // re-render happens when the editor blurs
-  }
-  applyView();
+function handleAction(e){
+  const host = e.target.closest('[data-key]'); if (!host) return;
+  const key = host.dataset.key;
+  const stageSel = e.target.closest('.stagesel');
+  if (stageSel) { carState(key).stage = stageSel.value || undefined; if(!stageSel.value) delete carState(key).stage; saveUS(); applyView(); return; }
+  const exp = e.target.closest('[data-exp]');
+  if (exp) { const p = exp.parentNode.querySelector('.ppi'); if (p) p.classList.toggle('open'); return; }
+  const cb = e.target.closest('input[data-ppi]');
+  if (cb) { const i = +cb.dataset.ppi; const cs = carState(key); cs.ppi = cs.ppi || {}; if (cb.checked) cs.ppi[i]=true; else delete cs.ppi[i]; saveUS(); applyView(); return; }
+  const btn = e.target.closest('.actbtn'); if (!btn) return;
+  if (btn.classList.contains('hidebtn')) { const cs=carState(key); cs.hidden = !cs.hidden; if(!cs.hidden) delete cs.hidden; saveUS(); applyView(); }
+  else if (btn.classList.contains('cmpbtn')) { compare.has(key) ? compare.delete(key) : (compare.size<3 ? compare.add(key) : null); applyView(); }
+  else if (btn.classList.contains('notebtn')) { openNoteEditor(host, key); }
+}
+tbody.addEventListener('click', handleAction);
+tbody.addEventListener('change', handleAction);
+cardsEl.addEventListener('click', handleAction);
+cardsEl.addEventListener('change', handleAction);
+
+/* dashboard goto */
+document.getElementById('dash').addEventListener('click', e => {
+  const t = e.target.closest('[data-goto]'); if (!t) return;
+  const key = t.dataset.goto;
+  const el = document.querySelector(`${state.view==='cards'?'#cards .card':'#grid tbody tr'}[data-key="${CSS.escape(key)}"]`);
+  if (el) { el.scrollIntoView({behavior:'smooth', block:'center'}); el.classList.add('hl'); setTimeout(()=>el.classList.remove('hl'), 2100); }
 });
+
+/* ---------- compare ---------- */
+function updateCmpBar(){
+  const bar = document.getElementById('cmpbar');
+  bar.classList.toggle('on', compare.size > 0);
+  document.getElementById('cmpcount').textContent = compare.size + ' selected' + (compare.size>=2?'':' — pick 2–3');
+  document.getElementById('cmpGo').disabled = compare.size < 2;
+}
+document.getElementById('cmpClr').addEventListener('click', ()=>{ compare.clear(); applyView(); });
+document.getElementById('cmpGo').addEventListener('click', ()=>{
+  const cars = [...compare].map(k => rows.find(r => rowKey(r)===k)).filter(Boolean);
+  if (cars.length < 2) return;
+  const specRows = [
+    ['Photo', c => `<img class="cmp-img" src="${esc(safeUrl(c.photo)||'')}" alt="" onerror="this.style.display='none'">`],
+    ['Price', c => '$'+Number(c.price).toLocaleString()],
+    ['Deal', c => (c.dealRating?esc(c.dealRating):'—') + (typeof c.imvDelta==='number'&&c.imvDelta!==0?` (${c.imvDelta<0?'$'+Math.abs(c.imvDelta)+' under':'$'+c.imvDelta+' over'})`:'')],
+    ['Fuel', c => esc(c.type)],
+    ['Miles', c => c.miles!=null?Number(c.miles).toLocaleString():'ask'],
+    ['MPG / range', c => esc(c.mpg)],
+    ['Est. $/mo', c => { const v=monthlyCost(c); return v==null?'—':'$'+Math.round(v); }],
+    ['Winter (−10°F)', c => { const w=winterInfo(c); return w?(w.txt+(w.cold?` ≈${w.cold} mi`:'')):'— (gas)'; }],
+    ['Safety', c => { const s=safetyFor(c.veh); return s?`${starStr(s.n)} · IIHS ${esc(s.i)}`:'—'; }],
+    ['Recalls', c => c.recalls==null?'—':(c.recalls===0?'0':c.recalls)],
+    ['History', c => [c.accident?esc(c.accident):'', c.title?esc(c.title)+' title':''].filter(Boolean).join(', ')||'—'],
+    ['Distance', c => c.dist!=null?c.dist+' mi':'—'],
+    ['Where', c => esc(c.loc)],
+    ['Source', c => esc(c.src)],
+    ['Listed', c => c._days!=null?(c._days===0?'today':c._days+' d'):'—'],
+    ['Why', c => `<span class="note">${esc(c.why)}</span>`]
+  ];
+  let html = '<div style="overflow-x:auto"><table class="cmp-table"><tr><th></th>' + cars.map(c=>`<th>${esc(c.veh)}</th>`).join('') + '</tr>';
+  specRows.forEach(([lab, fn]) => { html += `<tr><td class="lab">${lab}</td>` + cars.map(c=>`<td>${fn(c)}</td>`).join('') + '</tr>'; });
+  html += '</table></div>';
+  document.getElementById('cmpBody').innerHTML = html;
+  document.getElementById('modal').classList.add('on');
+});
+document.getElementById('mClose').addEventListener('click', ()=>document.getElementById('modal').classList.remove('on'));
+document.getElementById('modal').addEventListener('click', e=>{ if (e.target.id==='modal') document.getElementById('modal').classList.remove('on'); });
+
+/* ---------- sync export ---------- */
+document.getElementById('syncBtn').addEventListener('click', async ()=>{
+  const payload = JSON.stringify({ version:1, updated:new Date().toISOString(), cars:US.cars }, null, 2);
+  try { await navigator.clipboard.writeText(payload); } catch(e){}
+  try { const blob = new Blob([payload], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'user-state.json'; a.click(); } catch(e){}
+  const b = document.getElementById('syncBtn'); const o = b.textContent; b.textContent = '✓ Copied + downloaded — commit user-state.json'; setTimeout(()=>b.textContent=o, 3500);
+});
+
+/* ---------- history load ---------- */
+async function loadHistory() {
+  if (!latestRun) return;
+  const base = new Date(latestRun + 'T12:00:00'); if (isNaN(base)) return;
+  const dates = [];
+  for (let i = 1; i <= 14; i++) { const d = new Date(base); d.setDate(base.getDate() - i); dates.push(d.toISOString().slice(0, 10)); }
+  const results = await Promise.allSettled(dates.map(iso =>
+    fetch('history/' + iso + '.json?_=' + Date.now()).then(resp => resp.ok ? resp.json() : Promise.reject()).then(j => ({ date: iso, listings: j.listings || [] }))));
+  const snaps = results.filter(r => r.status === 'fulfilled').map(r => r.value).sort((a, b) => a.date < b.date ? -1 : 1);
+  if (!snaps.length) return;
+  priceHistory = {};
+  snaps.forEach(s => s.listings.forEach(x => { const k = x.url || x.veh; if (!k || typeof x.price !== 'number') return; (priceHistory[k] = priceHistory[k] || []).push({ d: s.date, p: x.price }); }));
+  const newest = snaps[snaps.length - 1]; const prices = {};
+  newest.listings.forEach(x => { const k = x.url || x.veh; if (k && typeof x.price === 'number') prices[k] = x.price; });
+  prevPrices = { date: newest.date, prices };
+  const liveKeys = new Set(rows.filter(r => !r._gone).map(rowKey));
+  rows.filter(r => !r._gone).forEach(r => { if (typeof r.price === 'number') (priceHistory[rowKey(r)] = priceHistory[rowKey(r)] || []).push({ d: latestRun, p: r.price }); });
+  rows = rows.filter(r => !r._gone);
+  newest.listings.forEach(x => { const k = x.url || x.veh; if (k && !liveKeys.has(k)) rows.push({ ...x, _gone: true }); });
+  buildDash(); applyView();
+}
 
 function relTime(dt) {
   const mins = Math.round((Date.now() - dt.getTime()) / 60000);
   if (mins < 60) return mins + ' min ago';
-  const hrs = Math.round(mins / 60);
-  if (hrs < 48) return hrs + ' hr ago';
+  const hrs = Math.round(mins / 60); if (hrs < 48) return hrs + ' hr ago';
   return Math.round(hrs / 24) + ' days ago';
 }
 
-fetch('listings.json?_=' + Date.now())
-  .then(r => { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
-  .then(d => {
-    rows = d.listings || [];
-    latestRun = d.updated ? d.updated.slice(0, 10) : null;
-    const runMs = latestRun ? Date.parse(latestRun) : NaN;
-    rows.forEach(r => {
-      const seen = r.firstSeen ? Date.parse(r.firstSeen) : NaN;
-      r._days = (!isNaN(runMs) && !isNaN(seen)) ? Math.max(0, Math.round((runMs - seen) / 86400000)) : null;
-    });
-    const dt = d.updated ? new Date(d.updated) : null;
-    if (dt && !isNaN(dt)) {
-      document.getElementById('updated').innerHTML = 'last updated <b>' + esc(dt.toLocaleString()) + '</b> (' + relTime(dt) + ')';
-      const hrsOld = (Date.now() - dt.getTime()) / 3600000;
-      if (hrsOld > 36) {
-        const stale = document.getElementById('stale');
-        stale.textContent = '⚠️ This data is ' + relTime(dt).replace(' ago', '') + ' old — the scheduled desktop task may not have run. Listings below may already be sold.';
-        stale.style.display = 'block';
-      }
-    } else {
-      document.getElementById('updated').textContent = '';
-    }
-    applyView();
-    loadHistory();
-  })
-  .catch(() => { document.getElementById('err').style.display = 'block'; document.getElementById('updated').textContent = ''; });
+/* ---------- boot ---------- */
+async function boot(){
+  // pull committed cross-device state first (best effort)
+  try { const us = await fetch('user-state.json?_=' + Date.now()); if (us.ok) mergeRemoteState(await us.json()); } catch(e){}
+  fetch('listings.json?_=' + Date.now())
+    .then(r => { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+    .then(d => {
+      rows = d.listings || [];
+      latestRun = d.updated ? d.updated.slice(0, 10) : null;
+      const runMs = latestRun ? Date.parse(latestRun) : NaN;
+      rows.forEach(r => { const seen = r.firstSeen ? Date.parse(r.firstSeen) : NaN; r._days = (!isNaN(runMs) && !isNaN(seen)) ? Math.max(0, Math.round((runMs - seen) / 86400000)) : null; });
+      const dt = d.updated ? new Date(d.updated) : null;
+      if (dt && !isNaN(dt)) {
+        document.getElementById('updated').innerHTML = 'last updated <b>' + esc(dt.toLocaleString()) + '</b> (' + relTime(dt) + ')';
+        const hrsOld = (Date.now() - dt.getTime()) / 3600000;
+        if (hrsOld > 36) { const stale = document.getElementById('stale'); stale.textContent = '⚠️ This data is ' + relTime(dt).replace(' ago', '') + ' old — the scheduled desktop task may not have run. Listings below may already be sold.'; stale.style.display = 'block'; }
+      } else document.getElementById('updated').textContent = '';
+      buildDash(); applyView(); loadHistory();
+    })
+    .catch(() => { document.getElementById('err').style.display = 'block'; document.getElementById('updated').textContent = ''; });
+}
+boot();
 </script>
 </body>
 </html>
