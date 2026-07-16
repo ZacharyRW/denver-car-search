@@ -142,6 +142,8 @@ tr.hl { animation:hlrow 2s ease; }
 .noteedit { display:block; width:100%; min-height:44px; margin-top:4px; font:inherit; font-size:12px; padding:4px 7px; border:1px solid var(--accent); border-radius:6px; background:var(--card); color:var(--text); }
 .badge { font-size:10px; color:#b45309; font-weight:600; }
 .legend { font-size:12px; color:var(--muted2); margin:8px 0 0; }
+.legend summary { cursor:pointer; font-weight:600; color:var(--muted); }
+.legend > div { margin-top:6px; }
 .count { font-weight:400; color:var(--muted2); font-size:13px; }
 
 .stagesel { font:inherit; font-size:11px; padding:2px 4px; border:1px solid var(--border2); border-radius:6px; background:var(--card); color:var(--text); max-width:118px; }
@@ -170,11 +172,16 @@ tr.hl { animation:hlrow 2s ease; }
 .card.gone { opacity:.6; }
 .card.hl { outline:2px solid var(--accent); }
 .card .ph-wrap { position:relative; aspect-ratio:16/10; background:var(--thumb-bg); }
+.card .ph-wrap.noph { aspect-ratio:auto; background:none; padding:11px 13px 0; }
+.card .ph-wrap.noph .ph-badges { position:static; justify-content:flex-start; }
+.card .ph-wrap.noph .rank-b { background:var(--thbg); color:var(--muted); }
 .card .ph-wrap img { width:100%; height:100%; object-fit:cover; display:block; }
 .card .ph-wrap .noimg { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:40px; color:var(--muted2); }
 .card .ph-badges { position:absolute; top:8px; left:8px; right:8px; display:flex; justify-content:space-between; align-items:flex-start; gap:6px; flex-wrap:wrap; }
 .card .rank-b { background:rgba(0,0,0,.62); color:#fff; font-weight:800; font-size:12px; padding:2px 8px; border-radius:999px; }
 .card .body { padding:11px 13px 12px; display:flex; flex-direction:column; gap:5px; flex:1; }
+.card .inhead { display:flex; align-items:center; gap:6px; }
+.card .inhead .rank-b { background:var(--thbg); color:var(--muted); }
 .card .title { font-size:15px; font-weight:700; }
 .card .title a { color:var(--accent); text-decoration:none; }
 .card .pricerow { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
@@ -238,9 +245,56 @@ footer { margin-top:34px; font-size:11px; color:var(--footer); }
   #sortSel { display:inline-block; }
   th[data-k] { display:none; }
   .tablewrap { display:none; }
-  #cards { display:grid; }
+  #cards { display:grid; grid-template-columns:1fr; gap:10px; }
   #viewSel { display:none; }
-  .dash { grid-template-columns:repeat(2,1fr); }
+
+  /* put the shortlist first; criteria, saved searches and tips move below it */
+  .wrap { padding:14px 12px 60px; display:flex; flex-direction:column; }
+  .topbar { order:0; } #err { order:1; } #stale { order:2; } #sources { order:3; }
+  .dash { order:4; }
+  #listhead { order:5; margin-top:6px; }
+  .controls { order:6; }
+  .tablewrap, #cards { order:7; }
+  #scatterwrap { order:8; }
+  .legend { order:9; }
+  .crit { order:10; margin-top:20px; }
+  #searchhead { order:11; } .searches { order:12; }
+  #tipshead { order:13; } .tips { order:14; }
+  footer { order:15; }
+
+  /* compact header */
+  h1 { font-size:19px; }
+  .sub { font-size:12px; margin-bottom:8px; }
+  .themebtn { padding:5px 10px; font-size:11px; }
+  h2 { font-size:15px; margin:22px 0 8px; }
+
+  /* one-line swipe strips instead of tall stacks */
+  #sources { flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:10px; padding-bottom:3px; }
+  #sources .srcchip { flex:none; }
+  #sources .srclab { white-space:nowrap; flex:none; }
+  .dash { display:flex; overflow-x:auto; -webkit-overflow-scrolling:touch; gap:8px; margin:0 0 4px; padding-bottom:5px; }
+  .tile { flex:0 0 132px; padding:8px 10px; }
+  .tile .val { font-size:16px; }
+  .searches { display:flex; overflow-x:auto; -webkit-overflow-scrolling:touch; gap:8px; padding-bottom:5px; }
+  .searches a { flex:0 0 200px; }
+  .crit { font-size:12px; gap:6px 14px; }
+
+  /* filters stay reachable while scrolling the list */
+  .controls { position:sticky; top:0; z-index:20; background:var(--bg); margin:0 -12px 10px; padding:8px 12px 7px; gap:6px; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+  .chip { padding:4px 10px; }
+  #q { max-width:none; }
+  .card, tr { scroll-margin-top:118px; }
+
+  /* tighter cards, bigger tap targets */
+  .card .ph-wrap { aspect-ratio:16/9; }
+  .card .body { padding:10px 12px 11px; gap:4px; }
+  .card .title { font-size:15px; line-height:1.35; }
+  .card .pricerow .price { font-size:20px; }
+  .card .specs { gap:2px 10px; }
+  .stagesel { min-height:32px; }
+  .actbtn { font-size:17px; padding:2px 7px; }
+  .cardfoot { gap:8px; padding-top:8px; border-top:1px solid var(--rowline); margin-top:4px; }
+  .cardfoot > .note { flex-basis:100%; margin-left:0 !important; }
 }
 </style>
 </head>
@@ -268,7 +322,7 @@ footer { margin-top:34px; font-size:11px; color:var(--footer); }
     <div><b>Use</b> Aurora → Lone Tree commute + daycare (~25 mi/day)</div>
   </div>
 
-  <h2>🔁 Saved searches — click to see fresh live listings</h2>
+  <h2 id="searchhead">🔁 Saved searches — click to see fresh live listings</h2>
   <div class="searches">
     <a href="https://www.cars.com/shopping/results/?zip=80015&maximum_distance=100&list_price_max=10000&stock_type=used&fuel_slugs%5B%5D=hybrid&fuel_slugs%5B%5D=electric&sort=list_price" target="_blank" rel="noopener">Cars.com — Hybrid + EV<span>≤$10k · 100 mi · price ↑</span></a>
     <a href="https://www.cargurus.com/Cars/inventorylisting/viewDetailsFilterViewInventoryListing.action?zip=80015&distance=100&maxPrice=10000&sortType=PRICE&sortDir=ASC" target="_blank" rel="noopener">CarGurus — All<span>≤$10k · 100 mi · deal rating + IMV</span></a>
@@ -284,7 +338,7 @@ footer { margin-top:34px; font-size:11px; color:var(--footer); }
     <a href="https://cars.ksl.com/search/priceTo/10000/mileageTo/160000" target="_blank" rel="noopener">KSL Cars (UT)<span>≤$10k · only if stretching radius</span></a>
   </div>
 
-  <h2>🏆 Ranked shortlist <span class="count" id="count"></span></h2>
+  <h2 id="listhead">🏆 Ranked shortlist <span class="count" id="count"></span></h2>
 
   <div class="controls">
     <button class="chip" data-fuel="ALL" aria-pressed="true">All</button>
@@ -349,9 +403,9 @@ footer { margin-top:34px; font-size:11px; color:var(--footer); }
     <svg id="scatter" viewBox="0 0 560 260" role="img" aria-label="Price versus mileage scatter chart"></svg>
   </div>
 
-  <div class="legend"><b>Score</b> = 0–100 value score computed on the page: safety 30% (NHTSA stars) · title/history risk 25% · price 20% · MPG 15% · mileage 10% — hover a pill for the recipe. Distance = miles from Aurora 80015. <b class="new" style="margin-left:0">NEW</b> = first seen in the latest run · <b>▼/▲</b> under a price = change vs the previous <code>history/</code> snapshot (mini price line appears once a few days exist) · <b class="gonetag" style="margin-left:0">GONE</b> = left the feed, likely sold — its final price + days listed is negotiating intel. "Listed" = days since this tracker first saw it. <b>$/mo</b> = estimated energy to run <i>your</i> commit (~550 mi/mo) at $3.68/gal or ~$0.14/kWh home charging. <b>Winter</b> = does an EV cover the 25-mi commute at −10 °F (✓ comfortably, ⚠ tight, ✗ no); L1 adds ~40 mi overnight. <b>Safety</b> from NHTSA/IIHS — click a car's NHTSA/IIHS links to verify. Per-row: pick a <b>status</b> stage to pin & track, 📝 note, 🔍 PPI checklist, ⇄ compare, ✕ hide. Stars/notes/stages save on this device; ⬆ Sync exports them for cross-device. 👶 / ➡️ under "Why" = the search engine's car-seat fit note and suggested next step for that specific car.</div>
+  <details class="legend" id="legend"><summary>ℹ️ How to read this page</summary><div><b>Score</b> = 0–100 value score computed on the page: safety 30% (NHTSA stars) · title/history risk 25% · price 20% · MPG 15% · mileage 10% — hover a pill for the recipe. Distance = miles from Aurora 80015. <b class="new" style="margin-left:0">NEW</b> = first seen in the latest run · <b>▼/▲</b> under a price = change vs the previous <code>history/</code> snapshot (mini price line appears once a few days exist) · <b class="gonetag" style="margin-left:0">GONE</b> = left the feed, likely sold — its final price + days listed is negotiating intel. "Listed" = days since this tracker first saw it. <b>$/mo</b> = estimated energy to run <i>your</i> commit (~550 mi/mo) at $3.68/gal or ~$0.14/kWh home charging. <b>Winter</b> = does an EV cover the 25-mi commute at −10 °F (✓ comfortably, ⚠ tight, ✗ no); L1 adds ~40 mi overnight. <b>Safety</b> from NHTSA/IIHS — click a car's NHTSA/IIHS links to verify. Per-row: pick a <b>status</b> stage to pin & track, 📝 note, 🔍 PPI checklist, ⇄ compare, ✕ hide. Stars/notes/stages save on this device; ⬆ Sync exports them for cross-device. 👶 / ➡️ under "Why" = the search engine's car-seat fit note and suggested next step for that specific car.</div></details>
 
-  <h2>💡 Buying tips for this budget</h2>
+  <h2 id="tipshead">💡 Buying tips for this budget</h2>
   <div class="tips"><ul>
     <li><b>Get a pre-purchase inspection</b> (~$100–150 at any indie shop) before buying anything at this age/mileage.</li>
     <li><b>Hybrids:</b> ask about traction-battery health and warning lights. Toyota hybrid batteries commonly last 200k+; Honda Civic Hybrid (IMA) batteries are the weak point.</li>
@@ -641,14 +695,18 @@ function cardHtml(r){
   const pinned = !!cs.stage;
   const isNew = !r._gone && latestRun && r.firstSeen === latestRun;
   const url = safeUrl(r.url);
+  const photo = safeUrl(r.photo);
   const title = url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(r.veh)} ↗</a>` : esc(r.veh);
   const hflags = historyFlags(r);
   const w = winterInfo(r);
+  const rankB = `<span class="rank-b">${r._gone?'GONE':'#'+esc(r.rank)}</span>`;
+  const badges = `${isNew?'<span class="new" style="margin:0">NEW</span>':''} ${dealBadge(r)}`;
   return `<div class="card ${pinned?'pinned':''}${r._gone?' gone':''}" data-key="${esc(key)}">
-    <div class="ph-wrap">${thumbHtml(r,'')||''}${safeUrl(r.photo)?`<img src="${esc(r.photo)}" alt="" loading="lazy" onerror="this.parentNode.innerHTML='<div class=\\'noimg\\'>🚗</div>'">`:'<div class="noimg">🚗</div>'}
-      <div class="ph-badges"><span class="rank-b">${r._gone?'GONE':'#'+esc(r.rank)}</span><span>${isNew?'<span class="new" style="margin:0">NEW</span>':''} ${dealBadge(r)}</span></div>
-    </div>
+    ${photo ? `<div class="ph-wrap"><img src="${esc(photo)}" alt="" loading="lazy" onerror="this.closest('.ph-wrap').classList.add('noph');this.remove()">
+      <div class="ph-badges">${rankB}<span>${badges}</span></div>
+    </div>` : ''}
     <div class="body">
+      ${photo ? '' : `<div class="inhead">${rankB}<span>${badges}</span></div>`}
       <div class="title">${title} ${stageChip(key)}</div>
       <div class="pricerow"><span class="price">$${Number(r.price).toLocaleString()}</span>${scoreHtml(r)}<span class="tag ${tagClass(r.type)}">${esc(r.type)}</span>${imvBadge(r)}${deltaHtml(r)}</div>
       <div class="specs"><span>${r.miles!=null?Number(r.miles).toLocaleString()+' mi':'miles: ask'}</span><span>${esc(r.mpg)}</span>${monthlyCost(r)!=null?`<span>~$${Math.round(monthlyCost(r))}/mo</span>`:''}<span>${r.dist!=null?esc(r.dist)+' mi · ':''}${esc(r.loc)}</span></div>
@@ -929,6 +987,7 @@ function relTime(dt) {
 }
 
 /* ---------- boot ---------- */
+if (window.innerWidth > 760) document.getElementById('legend').open = true;
 async function boot(){
   // pull committed cross-device state first (best effort)
   try { const us = await fetch('user-state.json?_=' + Date.now()); if (us.ok) mergeRemoteState(await us.json()); } catch(e){}
