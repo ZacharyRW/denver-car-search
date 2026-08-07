@@ -13,7 +13,7 @@
   --bg:#f6f7f9; --card:#fff; --text:#1c2126; --muted:#5b6572; --muted2:#6b7480;
   --border:#e3e7ec; --border2:#dfe4ea; --rowline:#edf0f3; --thbg:#f0f3f6;
   --accent:#2563eb; --green:#0b6b3a; --rise:#b91c1c; --footer:#93a0ad; --star-bg:#fefce8;
-  --ev-bg:#e0f2fe; --ev-fg:#075985; --phev-bg:#ede9fe; --phev-fg:#5b21b6; --hyb-bg:#dcfce7; --hyb-fg:#166534;
+  --ev-bg:#e0f2fe; --ev-fg:#075985; --phev-bg:#ede9fe; --phev-fg:#5b21b6; --hyb-bg:#dcfce7; --hyb-fg:#166534; --gas-bg:#fef3c7; --gas-fg:#92400e;
   --tips-bg:#fffbeb; --tips-border:#fde68a;
   --warn-bg:#fffbeb; --warn-border:#fde68a; --warn-fg:#92400e;
   --err-bg:#fef2f2; --err-border:#fecaca; --err-fg:#991b1b;
@@ -28,7 +28,7 @@
     --bg:#14181d; --card:#1d232b; --text:#e6e9ed; --muted:#9aa5b1; --muted2:#8a95a1;
     --border:#2b333d; --border2:#323b46; --rowline:#28303a; --thbg:#232a33;
     --accent:#7aa7ff; --green:#4ade80; --rise:#f87171; --footer:#5f6b78; --star-bg:#2b2610;
-    --ev-bg:#0c4a6e; --ev-fg:#bae6fd; --phev-bg:#4c1d95; --phev-fg:#ddd6fe; --hyb-bg:#14532d; --hyb-fg:#bbf7d0;
+    --ev-bg:#0c4a6e; --ev-fg:#bae6fd; --phev-bg:#4c1d95; --phev-fg:#ddd6fe; --hyb-bg:#14532d; --hyb-fg:#bbf7d0; --gas-bg:#78350f; --gas-fg:#fde68a;
     --tips-bg:#26210f; --tips-border:#4d4014;
     --warn-bg:#26210f; --warn-border:#4d4014; --warn-fg:#fcd34d;
     --err-bg:#2b1416; --err-border:#5c2226; --err-fg:#fca5a5;
@@ -42,7 +42,7 @@
   --bg:#14181d; --card:#1d232b; --text:#e6e9ed; --muted:#9aa5b1; --muted2:#8a95a1;
   --border:#2b333d; --border2:#323b46; --rowline:#28303a; --thbg:#232a33;
   --accent:#7aa7ff; --green:#4ade80; --rise:#f87171; --footer:#5f6b78; --star-bg:#2b2610;
-  --ev-bg:#0c4a6e; --ev-fg:#bae6fd; --phev-bg:#4c1d95; --phev-fg:#ddd6fe; --hyb-bg:#14532d; --hyb-fg:#bbf7d0;
+  --ev-bg:#0c4a6e; --ev-fg:#bae6fd; --phev-bg:#4c1d95; --phev-fg:#ddd6fe; --hyb-bg:#14532d; --hyb-fg:#bbf7d0; --gas-bg:#78350f; --gas-fg:#fde68a;
   --tips-bg:#26210f; --tips-border:#4d4014;
   --warn-bg:#26210f; --warn-border:#4d4014; --warn-fg:#fcd34d;
   --err-bg:#2b1416; --err-border:#5c2226; --err-fg:#fca5a5;
@@ -120,6 +120,7 @@ tr.hl { animation:hlrow 2s ease; }
 .t-ev { background:var(--ev-bg); color:var(--ev-fg); }
 .t-phev { background:var(--phev-bg); color:var(--phev-fg); }
 .t-hyb { background:var(--hyb-bg); color:var(--hyb-fg); }
+.t-gas { background:var(--gas-bg); color:var(--gas-fg); }
 .new { display:inline-block; font-size:9px; font-weight:800; background:#dc2626; color:#fff; padding:1px 5px; border-radius:4px; margin-left:6px; vertical-align:middle; }
 .deal { display:inline-block; font-size:10px; font-weight:700; padding:2px 6px; border-radius:5px; white-space:nowrap; }
 .deal-great { background:var(--deal-great-bg); color:var(--deal-great-fg); }
@@ -345,6 +346,7 @@ footer { margin-top:34px; font-size:11px; color:var(--footer); }
     <button class="chip" data-fuel="HYB" aria-pressed="false">Hybrid</button>
     <button class="chip" data-fuel="PHEV" aria-pressed="false">Plug-in</button>
     <button class="chip" data-fuel="EV" aria-pressed="false">EV</button>
+    <button class="chip" data-fuel="GAS" aria-pressed="false">Gas</button>
     <input id="q" type="search" placeholder="Filter: prius, littleton…" aria-label="Filter listings">
     <select id="sellerSel" aria-label="Seller type" title="Dealer or private seller">
       <option value="ALL">All sellers</option>
@@ -431,7 +433,7 @@ footer { margin-top:34px; font-size:11px; color:var(--footer); }
 <script>
 const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const safeUrl = u => (typeof u === 'string' && /^https?:\/\//i.test(u)) ? u : null;
-const tagClass = t => t === 'EV' ? 't-ev' : t === 'PHEV' ? 't-phev' : 't-hyb';
+const tagClass = t => t === 'EV' ? 't-ev' : t === 'PHEV' ? 't-phev' : t === 'GAS' ? 't-gas' : 't-hyb';
 const rowKey = r => r.url || r.veh;
 
 /* ---------- theme toggle ---------- */
@@ -451,7 +453,7 @@ applyTheme();
 // Commute economics: ~25 mi round trip x ~22 workdays ~= 550 mi/mo.
 const COMMUTE = { milesMo: 550, roundTrip: 25, gas: 3.68, elec: 0.14, evMiKwh: 3.3, phevMiKwh: 3.0 };
 function monthlyCost(r){
-  if (r.type === 'HYB') { const mpg = (typeof r.epaMpg === 'number' && r.epaMpg > 0) ? r.epaMpg : parseFloat(String(r.mpg||'').replace(/[^0-9.]/g,'')); if (!mpg) return null; return (COMMUTE.milesMo/mpg)*COMMUTE.gas; }
+  if (r.type === 'HYB' || r.type === 'GAS') { const mpg = (typeof r.epaMpg === 'number' && r.epaMpg > 0) ? r.epaMpg : parseFloat(String(r.mpg||'').replace(/[^0-9.]/g,'')); if (!mpg) return null; return (COMMUTE.milesMo/mpg)*COMMUTE.gas; }
   if (r.type === 'EV')  return (COMMUTE.milesMo/COMMUTE.evMiKwh)*COMMUTE.elec;
   if (r.type === 'PHEV') return (COMMUTE.milesMo/COMMUTE.phevMiKwh)*COMMUTE.elec;
   return null;
@@ -527,7 +529,7 @@ function ppiItems(type){
   const hyb = ['Hybrid battery: no warning, healthy state','Regen braking feels smooth'];
   const phev = ['Charges on a normal 120V outlet','Electric range close to spec on a full charge','No hybrid/charger fault codes'];
   const ev = ['Battery State-of-Health / bars (ask for LeafSpy read)','Range at 100% charge vs spec','Charges on Level 1 (120V) overnight','Charge port & cable included and working'];
-  return common.concat(type==='EV'?ev:type==='PHEV'?phev:hyb);
+  return common.concat(type==='EV'?ev:type==='PHEV'?phev:type==='HYB'?hyb:[]);
 }
 
 /* ---------- per-car user state (stars/notes/stages/ppi), device + cross-device ---------- */
