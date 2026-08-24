@@ -28,14 +28,14 @@ jobs:
                 if (!st.has(s.status)) fail("sources[" + i + "] (" + s.src + "): bad status " + s.status);
               });
             }
-            const types = new Set(["HYB", "PHEV", "EV"]);
+            const types = new Set(["HYB", "PHEV", "EV", "GAS"]);
             const sellers = new Set(["Dealer", "Private", null, undefined]);
             const numOrNull = (v) => v === null || v === undefined || typeof v === "number";
             d.listings.forEach((r, i) => {
               const at = "listings[" + i + "] (" + (r.veh || "?") + "): ";
               if (!r.veh) fail(at + "missing veh");
               if (typeof r.price !== "number") fail(at + "price must be a number");
-              if (!types.has(r.type)) fail(at + "type must be HYB|PHEV|EV, got " + r.type);
+              if (!types.has(r.type)) fail(at + "type must be HYB|PHEV|EV|GAS, got " + r.type);
               if (r.miles !== null && r.miles !== undefined && typeof r.miles !== "number") fail(at + "miles must be a number or null");
               if (!numOrNull(r.year)) fail(at + "year must be a number or null");
               if (!numOrNull(r.epaMpg)) fail(at + "epaMpg must be a number or null");
