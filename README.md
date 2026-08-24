@@ -113,7 +113,7 @@ The daily task only rewrites the JSON, so updates are tiny, clean commits.
       "rank": 1,
       "veh": "2010 Toyota Prius",
       "year": 2010, "make": "Toyota", "model": "Prius",  // structured — used for NHTSA/recall links
-      "type": "HYB",              // HYB | PHEV | EV
+      "type": "HYB",              // HYB | PHEV | EV | GAS
       "price": 7100,
       "miles": 170899,             // or null → shows "ask"
       "mpg": "48 mpg",
