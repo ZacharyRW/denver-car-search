@@ -4,8 +4,8 @@ BACKUP of the daily scheduled task that powers this tracker.
 WHAT THIS IS
   This is the exact prompt/instructions run every morning (~8:02 AM Mountain, cron "0 8 * * *")
   by a scheduled task in the Claude desktop app. It drives a logged-in Chrome to search the
-  car sites, enriches the results via NHTSA, and commits listings.json + history/<date>.json +
-  user-state.json to this repo. The live page (index.html) reads those files.
+  car sites, enriches the results via NHTSA + FuelEconomy.gov, and commits listings.json +
+  history/<date>.json + user-state.json to this repo. The live page (index.html) reads those files.
 
 HOW TO RESTORE IT (if this computer is ever lost/replaced)
   In the Claude desktop app, ask Claude:
@@ -17,15 +17,18 @@ HOW TO RESTORE IT (if this computer is ever lost/replaced)
   Original location on disk:
     ~/Documents/Claude/Scheduled/denver-car-search-daily/SKILL.md
 
-Last synced to repo: 2026-07-16
+Last synced to repo: 2026-09-07
+  (this sync brought the file up to date with the live task: efficient PURE-GAS cars now
+   qualify with an EPA-combined >= 32 mpg floor, "GAS" is a first-class type, the shortlist
+   target grew from ~12 to ~25, and the GitHub web-UI fallback now uses the /upload/ pages.)
 
-NOTE: this repo copy is now the source of truth — after editing it here, update the
+NOTE: this repo copy is the source of truth — after editing it here, update the
 desktop task's SKILL.md to match (or re-create the task from this file).
 -->
 
 ---
 name: denver-car-search-daily
-description: Daily used-car search for a reliable/safe/efficient family car under $10k near Aurora CO; captures photos/VIN/deal-rating/history flags/seller type, enriches recalls + crash ratings via NHTSA and MPG via FuelEconomy.gov, reports per-source status, publishes listings.json + dated history/ snapshot + user-state.json
+description: Daily used-car search for a reliable/safe/efficient family car under $10k near Aurora CO — hybrid, PHEV, EV, or efficient pure-gas (EPA combined >= 32 mpg); captures photos/VIN/deal-rating/history flags/seller type, enriches recalls + crash ratings via NHTSA and MPG via FuelEconomy.gov, reports per-source status, publishes listings.json + dated history/ snapshot + user-state.json
 ---
 
 Run a used-car search for Zachary, then publish the results to his GitHub Pages tracker (repo ZacharyRW/denver-car-search, branch main). The live page is https://zacharyrw.github.io/denver-car-search/ and it reads listings.json first, then dated history/ snapshots.
@@ -33,26 +36,28 @@ Run a used-car search for Zachary, then publish the results to his GitHub Pages 
 BUYER CRITERIA:
 - Location: lives at Aurora, CO 80015; commutes to Sam's Club in Lone Tree, CO + daycare runs (~25 mi round trip on a workday).
 - Budget: under $10,000 (slightly flexible for a standout).
-- Wants: reliable, safe for a young child, good gas mileage. Hybrid or electric both welcome; efficient gas OK. Has Level 1 (regular outlet) home charging, so EVs are fine for the short commute.
+- Wants: reliable, safe for a young child, good fuel economy. Hybrid, plug-in hybrid, and EV are ALL welcome, AND efficient PURE-GAS cars now qualify too — a candidate does NOT have to be a hybrid or EV. Has Level 1 (regular outlet) home charging, so EVs are fine for the short commute.
+- FUEL-ECONOMY FLOOR: a pure-gas car must have an EPA COMBINED rating of at least 32 mpg (use epaMpg from the EPA API in STEP 1b) to be shortlisted. Hybrids, plug-ins and EVs have no MPG floor. Screen out thirsty gas cars, trucks and large SUVs. When choosing between two similar cars, prefer the more efficient / cheaper-to-run one.
 - Search radius: up to 100 miles from 80015 (KSL/Utah only if explicitly stretching — flag the distance).
 - Proven models (EXAMPLES, NOT A WHITELIST): Toyota Prius, Toyota Camry Hybrid, Honda/Ford hybrids, Chevy Volt (plug-in), Nissan Leaf (2017+ preferred for battery), Ford/Hyundai/Kia hybrids. Judge EVERY candidate on the same criteria — reliability, safety, MPG, price — and shortlist whatever scores best. Do NOT exclude a car for not being on this list: a well-priced Lexus CT200h (Prius drivetrain), Honda Insight, Hyundai Ioniq, Kia Niro, or Toyota Avalon Hybrid beats a mediocre-priced Prius.
-- Known weak points to screen carefully (not auto-reject): Honda IMA-battery hybrids (2003–2011 Civic Hybrid / Insight — ask about battery replacement), pre-2017 Nissan Leaf (degraded range; check battery bars), any hybrid with an unknown traction-battery history.
+- Efficient PURE-GAS models that qualify (EXAMPLES, judge on the same reliability/safety/MPG/price bar, must be EPA combined >=32 mpg): Toyota Corolla, Honda Civic, Mazda3, Honda Fit, Toyota Yaris, Hyundai Elantra/Accent, Kia Forte/Rio/Soul, Nissan Sentra/Versa, Chevrolet Cruze/Sonic, Mitsubishi Mirage, Ford Focus/Fiesta. A well-priced 34-mpg Corolla with clean history beats a tired hybrid.
+- Known weak points to screen carefully (not auto-reject): Honda IMA-battery hybrids (2003-2011 Civic Hybrid / Insight — ask about battery replacement), pre-2017 Nissan Leaf (degraded range; check battery bars), any hybrid with an unknown traction-battery history.
 
 STEP 1 — SEARCH (use Google Chrome via the browser tools):
-1. Cars.com: https://www.cars.com/shopping/results/?zip=80015&maximum_distance=100&list_price_max=10000&stock_type=used&fuel_slugs%5B%5D=hybrid&fuel_slugs%5B%5D=electric&sort=list_price
-2. CarGurus: https://www.cargurus.com/Cars/inventorylisting/viewDetailsFilterViewInventoryListing.action?zip=80015&distance=100&maxPrice=10000&sortType=PRICE&sortDir=ASC (set fuel = hybrid/electric). CarGurus is the best source for the deal rating ("Great Deal") and the IMV market-value delta.
-3. Craigslist Denver: https://denver.craigslist.org/search/cta?max_price=10000&query=hybrid&sort=priceasc (also repeat query=prius, query=leaf, query=ct200h, query=ct+200h, query=niro, query=ioniq, query=insight, query=volt). Private sellers often don't write "hybrid" in the title, so the model-name queries catch cars the generic one misses. Use list view; grab each posting's direct URL.
+1. Cars.com — run BOTH of these: (a) Hybrid+EV: https://www.cars.com/shopping/results/?zip=80015&maximum_distance=100&list_price_max=10000&stock_type=used&fuel_slugs%5B%5D=hybrid&fuel_slugs%5B%5D=electric&sort=list_price ; (b) EFFICIENT GAS — drop the fuel filter to return all fuels and keep ONLY gas cars with EPA-combined >=32 mpg: https://www.cars.com/shopping/results/?zip=80015&maximum_distance=100&list_price_max=10000&stock_type=used&sort=list_price (the all-fuel list is huge and full of trucks/SUVs — use the >=32 mpg floor + the gas exemplar models above to keep only the efficient sedans/hatchbacks like Corolla, Civic, Mazda3, Fit, Elantra).
+2. CarGurus: https://www.cargurus.com/Cars/inventorylisting/viewDetailsFilterViewInventoryListing.action?zip=80015&distance=100&maxPrice=10000&sortType=PRICE&sortDir=ASC — this is already all-fuel; shortlist hybrids/EVs AND efficient gas (>=32 mpg). CarGurus is the best source for the deal rating ("Great Deal") and the IMV market-value delta.
+3. Craigslist Denver: https://denver.craigslist.org/search/cta?max_price=10000&query=hybrid&sort=priceasc (also repeat query=prius, query=leaf, query=ct200h, query=ct+200h, query=niro, query=ioniq, query=insight, query=volt, AND the efficient-gas queries query=corolla, query=civic, query=mazda3, query=elantra, query=fit, query=yaris, query=sentra, query=versa, query=forte, query=cruze). Private sellers often don't write "hybrid" in the title, so the model-name queries catch cars the generic one misses. For the gas-model results, keep only >=32 mpg trims. Use list view; grab each posting's direct URL.
 4. Facebook Marketplace (user is logged in) — DO NOT GIVE UP EARLY ON THIS SOURCE. Manual searching here regularly yields more real listings than any other source; if you get zero results, that is almost always a loading/scrolling problem on your end, not an empty market. Work it like this:
-   - Run EACH of these queries (radius 100 mi): https://www.facebook.com/marketplace/denver/search?minPrice=3000&maxPrice=10000&sortBy=price_ascend&query=hybrid — then repeat with query=prius, query=nissan%20leaf, query=chevy%20volt, query=camry%20hybrid, query=fusion%20hybrid, query=ct200h, query=lexus%20ct, query=kia%20niro, query=ioniq. Private sellers often omit the word "hybrid", so the model-name queries matter.
-   - Marketplace lazy-loads: after the page settles, SCROLL DOWN at least 4–5 times per query and wait for new tiles to render before reading results. The first screen alone is not the result set.
+   - Run EACH of these queries (radius 100 mi): https://www.facebook.com/marketplace/denver/search?minPrice=3000&maxPrice=10000&sortBy=price_ascend&query=hybrid — then repeat with query=prius, query=nissan%20leaf, query=chevy%20volt, query=camry%20hybrid, query=fusion%20hybrid, query=ct200h, query=lexus%20ct, query=kia%20niro, query=ioniq, AND the efficient-gas queries query=corolla, query=honda%20civic, query=mazda%203, query=hyundai%20elantra, query=honda%20fit, query=nissan%20sentra. Private sellers often omit fuel words, so the model-name queries matter. For gas models, keep only >=32 mpg trims.
+   - Marketplace lazy-loads: after the page settles, SCROLL DOWN at least 4-5 times per query and wait for new tiles to render before reading results. The first screen alone is not the result set.
    - If a query shows nothing or errors, RELOAD and retry it once more before moving on. Only after a reload + rescroll still shows an empty grid or a login wall may you mark Facebook as blocked — and then you MUST say so in the "sources" status (below) instead of failing silently.
    - Click into promising listings for price/mileage/photo/location detail. Also check Facebook dealer pages surfaced in results. Ignore $1/Free "parts out" listings.
-5. Carvana: https://www.carvana.com/cars/hybrid?price=0-10000 (and /cars/electric). Carvana ships — note delivery to 80015.
-6. eBay Motors: https://www.ebay.com/sch/6001/i.html?_nkw=hybrid&_udhi=10000&_stpos=80015&_sadis=100&LH_BIN=1 (Buy-It-Now within 100 mi; also prius, nissan+leaf).
-7. OfferUp: https://offerup.com/search?q=prius&price_max=10000 (near Aurora CO; also hybrid, nissan leaf).
-8. Hertz Car Sales: https://www.hertzcarsales.com/ — hybrids/EVs under $10k near 80015 (fleet cars, clean history, no-haggle).
-9. Enterprise Car Sales — search this one every run, don't skip it: https://www.enterprisecarsales.com/used-cars-trucks-suvs/search.html?location=Denver%2C+CO — set max price $10,000 and filter fuel to hybrid/electric (use the site's own search near Denver/Aurora if that URL layout changes). Fleet cars with clean history, no-haggle pricing, and a 7-day buyback; their under-$10k hybrids sell fast, so capture them the day they appear. sellerType = "Dealer".
-10. KSL Cars (Utah — only if stretching the radius; flag distance clearly): https://cars.ksl.com/search/make/Toyota/model/Prius/priceTo/10000 (and hybrid/leaf).
+5. Carvana: https://www.carvana.com/cars/hybrid?price=0-10000 (and /cars/electric, and an efficient-gas browse if reachable). Carvana ships — note delivery to 80015.
+6. eBay Motors: https://www.ebay.com/sch/6001/i.html?_nkw=hybrid&_udhi=10000&_stpos=80015&_sadis=100&LH_BIN=1 (Buy-It-Now within 100 mi; also prius, nissan+leaf, corolla, civic — keep gas only if >=32 mpg).
+7. OfferUp: https://offerup.com/search?q=prius&price_max=10000 (near Aurora CO; also hybrid, nissan leaf, corolla, civic, elantra — keep gas only if >=32 mpg).
+8. Hertz Car Sales: https://www.hertzcarsales.com/ — hybrids/EVs AND efficient gas under $10k near 80015 (fleet cars, clean history, no-haggle).
+9. Enterprise Car Sales — search this one every run, don't skip it: https://www.enterprisecarsales.com/used-cars-trucks-suvs/search.html?location=Denver%2C+CO — set max price $10,000 and DO NOT restrict fuel: capture hybrids, EVs AND efficient gas (>=32 mpg) (use the site's own search near Denver/Aurora if that URL layout changes). Fleet cars with clean history, no-haggle pricing, and a 7-day buyback; their under-$10k cars sell fast, so capture them the day they appear. sellerType = "Dealer".
+10. KSL Cars (Utah — only if stretching the radius; flag distance clearly): https://cars.ksl.com/search/make/Toyota/model/Prius/priceTo/10000 (and hybrid/leaf/corolla).
 
 For each relevant listing capture ALL of the following where shown (use null when a field isn't available — DO NOT invent values):
 - year/make/model, price, mileage, location + distance from Aurora 80015, source, direct listing URL.
@@ -67,7 +72,7 @@ For each relevant listing capture ALL of the following where shown (use null whe
 - title: title status if shown — "Clean", "Salvage", "Rebuilt", "Lemon". null if not stated. NEVER shortlist a salvage/rebuilt/junk title; screen those out.
 - carSeatNotes: one sentence on this SPECIFIC car for a rear-facing child seat — rear-seat room, LATCH access, door opening, hatchback cargo for daycare bags (e.g. "Midsize rear seat fits rear-facing easily" vs "Subcompact — verify front-passenger clearance with the seat installed").
 - nextAction: the single most useful next step for THIS listing (e.g. "Ask private seller for VIN + title photo before driving out", "Dealer — request the free Carfax link and recall-work receipts", "Ask for a LeafSpy battery report before viewing").
-Screen out salvage/parts/junk. Aim for the ~12 best by value across ALL sources (reliable model, low miles for price, close by, good deal rating / below IMV).
+Screen out salvage/parts/junk. For PURE-GAS cars, only shortlist EPA-combined >=32 mpg (per the EPA API below) — screen out thirsty gas cars, trucks and big SUVs. Aim for the ~25 best by value across ALL sources (reliable model, low miles for price, close by, good deal rating / below IMV), mixing hybrids, EVs, plug-ins and efficient gas.
 
 STEP 1b — ENRICH VIA FREE APIS (no key needed; use the browser or a fetch). Cache per year+make+model — listings sharing a model-year share these values, so one lookup covers them all:
 For every listing that has a vin:
@@ -77,10 +82,10 @@ For every listing (VIN or not), get open recalls by model-year:
 - Set recalls = the count of returned campaigns (results array length). 0 is a valid, meaningful value (report it, don't null it). If the API errors, use null.
 For every listing, get the official NHTSA crash-test rating:
 - https://api.nhtsa.gov/SafetyRatings/modelyear/<YEAR>/make/<MAKE>/model/<MODEL> — take the first VehicleId from Results, then fetch https://api.nhtsa.gov/SafetyRatings/VehicleId/<VehicleId> and read OverallRating.
-- Set nhtsaStars = that number (1–5). If the rating is "Not Rated" or the API returns nothing, use null. Do not guess.
+- Set nhtsaStars = that number (1-5). If the rating is "Not Rated" or the API returns nothing, use null. Do not guess.
 For every listing, get official EPA fuel economy:
 - https://www.fueleconomy.gov/ws/rest/vehicle/menu/options?year=<YEAR>&make=<MAKE>&model=<MODEL> — pick the option matching the trim (prefer automatic), then fetch https://www.fueleconomy.gov/ws/rest/vehicle/<ID> and read comb08 (combined MPG; for EVs this is MPGe).
-- Set epaMpg = that number. If no match, use null. Keep the human "mpg" string too — epaMpg is the machine-readable version the page uses for $/mo math and scoring.
+- Set epaMpg = that number. If no match, use null. Keep the human "mpg" string too — epaMpg is the machine-readable version the page uses for $/mo math and scoring. For PURE-GAS candidates this comb08 value is ALSO the >=32 mpg gate — if epaMpg < 32 for a gas car, drop it from the shortlist.
 
 STEP 1c — DEDUP:
 The same car often appears on multiple sources (e.g. Cars.com + CarGurus, or a dealer's own FB page). Deduplicate:
@@ -93,12 +98,12 @@ Build the results as this exact JSON shape (call this the DATA):
   "updated": "<current ISO8601 timestamp with -06:00 or -07:00 MT offset>",
   "criteria": {"budget_max":10000,"zip":"80015","radius_miles":100},
   "sources": [ {"src":"Cars.com","status":"ok","count":6,"note":""} ],
-  "listings": [ {"rank":1,"veh":"YEAR MAKE MODEL","year":0,"make":"","model":"","type":"HYB|PHEV|EV","price":0,"miles":0,"mpg":"","epaMpg":null,"dist":0,"loc":"","src":"","sellerType":null,"url":"","photo":null,"vin":null,"dealRating":null,"imvDelta":null,"daysListed":null,"accident":null,"title":null,"recalls":null,"nhtsaStars":null,"carSeatNotes":null,"nextAction":null,"why":"","firstSeen":"YYYY-MM-DD"} ]
+  "listings": [ {"rank":1,"veh":"YEAR MAKE MODEL","year":0,"make":"","model":"","type":"HYB|PHEV|EV|GAS","price":0,"miles":0,"mpg":"","epaMpg":null,"dist":0,"loc":"","src":"","sellerType":null,"url":"","photo":null,"vin":null,"dealRating":null,"imvDelta":null,"daysListed":null,"accident":null,"title":null,"recalls":null,"nhtsaStars":null,"carSeatNotes":null,"nextAction":null,"why":"","firstSeen":"YYYY-MM-DD"} ]
 }
 Rules for the data:
 - "sources" is the honesty ledger and MUST have one entry for EVERY source in STEP 1, every run — even the ones that produced nothing. status is one of: "ok" (searched, results read), "empty" (searched fine, nothing matched), "blocked" (login wall / bot block / wouldn't load after a retry), "error" (site broken), "skipped" (deliberately not searched — say why in note). count = listings that made the final shortlist from that source. The page shows this strip so the user can tell "no Facebook cars" apart from "Facebook wasn't really searched". Never report ok for a source you didn't actually read.
-- "type" must be HYB, PHEV, or EV (use HYB for a plain efficient gas car too, or note in why).
-- "miles" is a number or null. "recalls"/"imvDelta"/"daysListed"/"year"/"epaMpg" are numbers or null. "nhtsaStars" is 1–5 or null. "photo"/"vin"/"dealRating"/"accident"/"title"/"make"/"model"/"carSeatNotes"/"nextAction" are strings or null. "sellerType" is "Dealer", "Private", or null.
+- "type" must be HYB, PHEV, EV, or GAS. Use GAS for a pure-gas efficient car (>=32 mpg combined) — the tracker page renders a "Gas" badge and has a Gas filter chip for it. Use HYB for a conventional hybrid, PHEV for a plug-in hybrid, EV for a battery-electric. Do NOT label a pure-gas car HYB.
+- "miles" is a number or null. "recalls"/"imvDelta"/"daysListed"/"year"/"epaMpg" are numbers or null. "nhtsaStars" is 1-5 or null. "photo"/"vin"/"dealRating"/"accident"/"title"/"make"/"model"/"carSeatNotes"/"nextAction" are strings or null. "sellerType" is "Dealer", "Private", or null.
 - Include EVERY field on every listing (use null for missing) so the page can rely on the shape.
 - "firstSeen": FIRST fetch the current listings.json from the repo. For any listing whose url (or vin) already appears there, KEEP its existing firstSeen date. For genuinely new listings, set firstSeen to today's date. The tracker shows a red NEW badge when firstSeen == the run date.
 - Rank best-value first.
@@ -108,8 +113,8 @@ Now write THREE files to the repo:
 2. history/YYYY-MM-DD.json — a dated snapshot for today, identical content to listings.json, in the history/ folder. The filename MUST use HYPHENS (e.g. history/2026-07-15.json) — index.html fetches these as history/<YYYY-MM-DD>.json (from toISOString().slice(0,10)); an underscore filename would silently break price deltas, sparklines, and GONE rows. Compute the date from the SAME Mountain-Time timestamp used in "updated". If today's snapshot already exists, OVERWRITE it (a re-run refreshes, not duplicates).
 3. user-state.json (repo root) — the cross-device store for the user's pins/notes/status stages. IMPORTANT: this file is owned by the USER via the page, not by you. FIRST fetch the existing user-state.json from the repo. If it exists, RE-COMMIT IT UNCHANGED (never clobber the user's stars/notes/pipeline stages). If it does NOT exist yet, create it once as: {"version":1,"updated":"<ISO timestamp>","cars":{}} and commit that empty seed. Do not otherwise modify it.
 
-Commit the files to ZacharyRW/denver-car-search on branch main using the GitHub connector (create-or-update file; one or more commits is fine), message like "Update listings + history snapshot <date>". If the GitHub connector is unavailable, instead drive Chrome to github.com/ZacharyRW/denver-car-search/edit/main/listings.json (and .../new/main for history/<date>.json) and commit. Do not paste any GitHub token into chat.
+Commit the files to ZacharyRW/denver-car-search on branch main using the GitHub connector (create-or-update file; one or more commits is fine), message like "Update listings + history snapshot <date>". If the GitHub connector is unavailable, instead drive Chrome to github.com/ZacharyRW/denver-car-search (use the web UI: the upload page github.com/ZacharyRW/denver-car-search/upload/main for listings.json + user-state.json, and github.com/ZacharyRW/denver-car-search/upload/main/history for history/<date>.json — set the commit message and click Commit changes). Do not paste any GitHub token into chat.
 
-STEP 3 — REPORT: Post a short ranked summary in chat highlighting anything NEW vs the previous listings.json, one line each with the direct link, source, deal rating, and any below-market IMV. Include a one-line source roll-call (e.g. "Cars.com ✓6 · Facebook blocked · Enterprise ✓2") matching the "sources" array. Note EV winter-range and hybrid-battery caveats only where relevant. Confirm listings.json, today's history/<date>.json, and user-state.json were committed. Do not contact any seller or take any action beyond searching, committing the files, and reporting.
+STEP 3 — REPORT: Post a short ranked summary in chat highlighting anything NEW vs the previous listings.json, one line each with the direct link, source, deal rating, and any below-market IMV. Note the fuel type (Hybrid/PHEV/EV/Gas) per pick. Include a one-line source roll-call (e.g. "Cars.com ✓6 · Facebook blocked · Enterprise ✓2") matching the "sources" array. Note EV winter-range and hybrid-battery caveats only where relevant. Confirm listings.json, today's history/<date>.json, and user-state.json were committed. Do not contact any seller or take any action beyond searching, committing the files, and reporting.
 
 The live page updates automatically once listings.json is committed: https://zacharyrw.github.io/denver-car-search/
