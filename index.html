@@ -1,4 +1,24 @@
 <!DOCTYPE html>
+<!--
+  ============================================================================
+  Denver Car Search Tracker — index.html
+  ----------------------------------------------------------------------------
+  This page is intentionally a SINGLE self-contained file (HTML + CSS + JS).
+  GitHub Pages serves it directly: no build step, no bundling, no framework.
+
+  Runtime data (fetched client-side, never baked in):
+    - listings.json             current shortlist, rewritten by the daily task
+    - history/YYYY-MM-DD.json   dated snapshots, power the price-change badges
+
+  Per-device state (stars, notes, hidden rows) lives in the browser's
+  localStorage and does NOT sync between devices. The "Sync state" button
+  exports that state as user-state.json, which can be committed to the repo
+  for safekeeping / manual cross-device restore.
+
+  If the DATA looks wrong, don't edit this file — check listings.json and
+  scheduled-task-prompt.md (the daily engine's instructions) instead.
+  ============================================================================
+-->
 <html lang="en">
 <head>
 <meta charset="utf-8">

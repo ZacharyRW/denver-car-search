@@ -86,7 +86,7 @@ The daily task only rewrites the JSON, so updates are tiny, clean commits.
 
 1. **Create the repo.** On GitHub, create a new repo named `denver-car-search`
    (public is simplest for Pages; private also works on any modern plan).
-2. **Add these files.** Upload/commit `index.html`, `data/listings.json`, and this
+2. **Add these files.** Upload/commit `index.html`, `listings.json`, and this
    README (drag-and-drop in the GitHub web UI is fine, or `git push`).
 3. **Enable Pages.** Repo → **Settings → Pages** → Source: **Deploy from a branch**,
    Branch: **main**, Folder: **/(root)** → Save. After a minute your site is live at:
